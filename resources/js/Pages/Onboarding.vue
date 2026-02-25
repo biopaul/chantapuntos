@@ -3,8 +3,10 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
 import ChildIcon from '@/Components/ChildIcon.vue';
 import Modal from '@/Components/Modal.vue';
+import { resizeImageFile } from '@/utils/resizeImage';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
@@ -30,6 +32,10 @@ const avatarPreview = ref(null);
 const editAvatarPreview = ref(null);
 const showEditModal = ref(false);
 const editingChild = ref(null);
+const fileInputRef = ref(null);
+const cameraInputRef = ref(null);
+const editFileInputRef = ref(null);
+const editCameraInputRef = ref(null);
 
 const iconEmoji = {
     star: '⭐',
@@ -58,10 +64,17 @@ function getChildAvatarUrl(child) {
     return child.avatar_url ?? getAvatarUrl(child.avatar_path);
 }
 
-function onAvatarChange(e) {
+async function onAvatarChange(e) {
     const file = e.target.files?.[0];
-    form.avatar = file ?? null;
-    avatarPreview.value = file ? URL.createObjectURL(file) : null;
+    if (!file) {
+        form.avatar = null;
+        avatarPreview.value = null;
+        return;
+    }
+    const resized = await resizeImageFile(file);
+    form.avatar = resized;
+    avatarPreview.value = URL.createObjectURL(resized);
+    e.target.value = '';
 }
 
 function selectIcon(id) {
@@ -88,10 +101,17 @@ function openEdit(child) {
     showEditModal.value = true;
 }
 
-function onEditAvatarChange(e) {
+async function onEditAvatarChange(e) {
     const file = e.target.files?.[0];
-    editForm.avatar = file ?? null;
-    editAvatarPreview.value = file ? URL.createObjectURL(file) : (editingChild.value ? getChildAvatarUrl(editingChild.value) : null);
+    if (!file) {
+        editForm.avatar = null;
+        editAvatarPreview.value = editingChild.value ? getChildAvatarUrl(editingChild.value) : null;
+        return;
+    }
+    const resized = await resizeImageFile(file);
+    editForm.avatar = resized;
+    editAvatarPreview.value = URL.createObjectURL(resized);
+    e.target.value = '';
 }
 
 function submitEdit() {
@@ -142,21 +162,21 @@ function submitEdit() {
                                         />
                                         <span class="font-medium text-gray-800">{{ child.name }}</span>
                                     </div>
-                                    <button
+                                    <SecondaryButton
                                         v-if="child.is_owner"
                                         type="button"
-                                        class="text-sm text-indigo-600 hover:text-indigo-800"
+                                        class="w-full sm:w-auto"
                                         @click="openEdit(child)"
                                     >
                                         Editar
-                                    </button>
+                                    </SecondaryButton>
                                 </li>
                             </ul>
                             <div class="mt-4">
                                 <Link
                                     :href="route('dashboard')"
                                     as="button"
-                                    class="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow hover:bg-indigo-700"
+                                    class="inline-flex w-full justify-center rounded-md border border-transparent bg-gray-800 px-4 py-2 text-sm font-medium text-white shadow-sm transition duration-150 ease-in-out hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                                 >
                                     Continuar al inicio
                                 </Link>
@@ -198,32 +218,49 @@ function submitEdit() {
 
                             <div>
                                 <InputLabel value="Foto (opcional)" />
-                                <div class="mt-2 flex items-center gap-4">
+                                <div class="mt-2 flex flex-wrap items-center gap-3">
                                     <div
                                         v-if="avatarPreview"
                                         class="h-16 w-16 overflow-hidden rounded-full border-2 border-gray-200"
                                     >
                                         <img :src="avatarPreview" alt="Vista previa" class="h-full w-full object-cover" />
                                     </div>
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        class="block w-full text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-indigo-700 hover:file:bg-indigo-100"
-                                        @change="onAvatarChange"
-                                    />
+                                    <div class="flex flex-wrap gap-2">
+                                        <input
+                                            ref="cameraInputRef"
+                                            type="file"
+                                            accept="image/*"
+                                            capture="environment"
+                                            class="hidden"
+                                            @change="onAvatarChange"
+                                        />
+                                        <input
+                                            ref="fileInputRef"
+                                            type="file"
+                                            accept="image/*"
+                                            class="hidden"
+                                            @change="onAvatarChange"
+                                        />
+                                        <SecondaryButton type="button" @click="cameraInputRef?.click()">
+                                            Sacar foto
+                                        </SecondaryButton>
+                                        <SecondaryButton type="button" @click="fileInputRef?.click()">
+                                            Elegir de galería
+                                        </SecondaryButton>
+                                    </div>
                                 </div>
                                 <InputError :message="form.errors.avatar" />
                             </div>
 
-                            <div class="flex gap-3">
-                                <PrimaryButton type="submit" :disabled="form.processing">
+                            <div class="flex flex-col gap-3">
+                                <PrimaryButton type="submit" class="w-full" :disabled="form.processing">
                                     Añadir hijo
                                 </PrimaryButton>
                                 <Link
                                     v-if="children.length > 0"
                                     :href="route('dashboard')"
                                     as="button"
-                                    class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+                                    class="inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                                 >
                                     Continuar sin añadir más
                                 </Link>
@@ -268,31 +305,44 @@ function submitEdit() {
                     </div>
                     <div>
                         <InputLabel value="Foto (opcional)" />
-                        <div class="mt-2 flex items-center gap-4">
+                        <div class="mt-2 flex flex-wrap items-center gap-3">
                             <div
                                 v-if="editAvatarPreview"
                                 class="h-16 w-16 overflow-hidden rounded-full border-2 border-gray-200"
                             >
                                 <img :src="editAvatarPreview" alt="Vista previa" class="h-full w-full object-cover" />
                             </div>
-                            <input
-                                type="file"
-                                accept="image/*"
-                                class="block w-full text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-indigo-700 hover:file:bg-indigo-100"
-                                @change="onEditAvatarChange"
-                            />
+                            <div class="flex flex-wrap gap-2">
+                                <input
+                                    ref="editCameraInputRef"
+                                    type="file"
+                                    accept="image/*"
+                                    capture="environment"
+                                    class="hidden"
+                                    @change="onEditAvatarChange"
+                                />
+                                <input
+                                    ref="editFileInputRef"
+                                    type="file"
+                                    accept="image/*"
+                                    class="hidden"
+                                    @change="onEditAvatarChange"
+                                />
+                                <SecondaryButton type="button" @click="editCameraInputRef?.click()">
+                                    Sacar foto
+                                </SecondaryButton>
+                                <SecondaryButton type="button" @click="editFileInputRef?.click()">
+                                    Elegir de galería
+                                </SecondaryButton>
+                            </div>
                         </div>
                         <p class="mt-1 text-xs text-gray-500">Sube una nueva imagen para reemplazar la actual.</p>
                         <InputError :message="editForm.errors.avatar" />
                     </div>
                     <div class="flex justify-end gap-2">
-                        <button
-                            type="button"
-                            class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                            @click="showEditModal = false"
-                        >
+                        <SecondaryButton type="button" @click="showEditModal = false">
                             Cancelar
-                        </button>
+                        </SecondaryButton>
                         <PrimaryButton type="submit" :disabled="editForm.processing">
                             Guardar
                         </PrimaryButton>

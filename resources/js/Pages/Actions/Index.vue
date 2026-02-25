@@ -3,6 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
 import Modal from '@/Components/Modal.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
@@ -193,13 +194,9 @@ function isCustom(action) {
                         <InputError :message="createForm.errors.points" />
                     </div>
                     <div class="flex justify-end gap-2 pt-4">
-                        <button
-                            type="button"
-                            class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                            @click="showCreateModal = false"
-                        >
+                        <SecondaryButton type="button" @click="showCreateModal = false">
                             Cancelar
-                        </button>
+                        </SecondaryButton>
                         <PrimaryButton type="submit" :disabled="createForm.processing">
                             Crear
                         </PrimaryButton>
@@ -237,13 +234,9 @@ function isCustom(action) {
                         <InputError :message="editForm.errors.points" />
                     </div>
                     <div class="flex justify-end gap-2 pt-4">
-                        <button
-                            type="button"
-                            class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                            @click="showEditModal = false"
-                        >
+                        <SecondaryButton type="button" @click="showEditModal = false">
                             Cancelar
-                        </button>
+                        </SecondaryButton>
                         <PrimaryButton type="submit" :disabled="editForm.processing">
                             Guardar
                         </PrimaryButton>

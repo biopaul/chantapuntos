@@ -1,5 +1,6 @@
 <script setup>
 /* global __APP_VERSION__ */
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { computed, onMounted, ref } from 'vue';
 import { usePage } from '@inertiajs/vue3';
 
@@ -70,13 +71,9 @@ function updateNow() {
                         Hay una nueva versión de Chanta Puntos. Actualizá la app para seguir usando.
                     </p>
                     <div class="mt-6">
-                        <button
-                            type="button"
-                            class="w-full rounded-xl bg-indigo-600 px-4 py-3 text-base font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                            @click="updateNow"
-                        >
+                        <PrimaryButton type="button" class="w-full" @click="updateNow">
                             Actualizar ahora
-                        </button>
+                        </PrimaryButton>
                     </div>
                 </div>
             </div>

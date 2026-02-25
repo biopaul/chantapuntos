@@ -5,6 +5,8 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import Modal from '@/Components/Modal.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
+import { resizeImageFile } from '@/utils/resizeImage';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { onMounted, ref } from 'vue';
 
@@ -44,6 +46,8 @@ const addForm = useForm({ child_id: '', action_id: '' });
 const subtractForm = useForm({ child_id: '', action_id: '' });
 const editForm = useForm({ name: '', icon: 'star', avatar: null });
 const editAvatarPreview = ref(null);
+const editFileInputRef = ref(null);
+const editCameraInputRef = ref(null);
 
 
 function openAdd() {
@@ -80,10 +84,17 @@ function openEditChild(child) {
     showEditModal.value = true;
 }
 
-function onEditAvatarChange(e) {
+async function onEditAvatarChange(e) {
     const file = e.target.files?.[0];
-    editForm.avatar = file ?? null;
-    editAvatarPreview.value = file ? URL.createObjectURL(file) : (editingChild.value?.avatar_url ?? null);
+    if (!file) {
+        editForm.avatar = null;
+        editAvatarPreview.value = editingChild.value?.avatar_url ?? null;
+        return;
+    }
+    const resized = await resizeImageFile(file);
+    editForm.avatar = resized;
+    editAvatarPreview.value = URL.createObjectURL(resized);
+    e.target.value = '';
 }
 
 function submitEditChild() {
@@ -152,64 +163,58 @@ function shareApp() {
                 <Link
                     v-if="canInvite"
                     :href="route('invitations.index')"
-                    class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50"
+                    class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                 >
                     Invitar a otro padre
                 </Link>
             </div>
         </template>
 
-        <div class="py-6">
-            <div class="mx-auto max-w-4xl sm:px-6 lg:px-8">
-                <div class="mb-6 flex flex-col items-center gap-4">
-                    <div class="flex w-full max-w-md justify-center gap-4">
-                        <button
-                            type="button"
-                            class="flex flex-1 items-center justify-center gap-2 rounded-xl bg-green-600 px-8 py-5 text-lg font-semibold text-white shadow-md transition hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 min-h-[52px] touch-manipulation"
-                            @click="openAdd"
-                        >
-                            <span aria-hidden="true">😊</span>
-                            Sumar puntos
-                        </button>
-                        <button
-                            type="button"
-                            class="flex flex-1 items-center justify-center gap-2 rounded-xl bg-red-600 px-8 py-5 text-lg font-semibold text-white shadow-md transition hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 min-h-[52px] touch-manipulation"
-                            @click="openSubtract"
-                        >
-                            <span aria-hidden="true">😢</span>
-                            Restar puntos
-                        </button>
-                    </div>
-                    <div
-                        v-if="showInstallButton && !isStandalone"
-                        class="flex w-full max-w-md items-center justify-between gap-3 rounded-xl border border-indigo-200 bg-indigo-50 px-4 py-3"
+        <div class="py-6 px-4 sm:px-6 lg:px-8">
+            <div class="mx-auto max-w-4xl">
+                <div class="mb-6 flex flex-col items-center gap-3">
+                    <button
+                        type="button"
+                        class="flex w-full max-w-md items-center justify-center gap-2 rounded-md border border-transparent bg-green-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition duration-150 ease-in-out hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                        @click="openAdd"
                     >
-                        <span class="text-sm font-medium text-indigo-800">
-                            Instalar Chanta Puntos en tu teléfono
-                        </span>
-                        <button
-                            type="button"
-                            class="shrink-0 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            @click="installApp"
-                        >
-                            Instalar
-                        </button>
-                    </div>
+                        <span aria-hidden="true">😊</span>
+                        Sumar puntos
+                    </button>
+                    <button
+                        type="button"
+                        class="flex w-full max-w-md items-center justify-center gap-2 rounded-md border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition duration-150 ease-in-out hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                        @click="openSubtract"
+                    >
+                        <span aria-hidden="true">😢</span>
+                        Restar puntos
+                    </button>
                     <Link
                         v-if="canRedeem"
                         :href="route('redemptions.create')"
-                        class="flex w-full max-w-md items-center justify-center gap-2 rounded-xl border border-gray-300 bg-white px-6 py-4 text-lg font-semibold text-gray-700 shadow-sm transition hover:bg-gray-50"
+                        class="flex w-full max-w-md items-center justify-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                     >
-                        <span class="text-2xl" aria-hidden="true">💰</span>
+                        <span class="text-xl" aria-hidden="true">💰</span>
                         Canje de puntos
                     </Link>
                     <div
                         v-else
-                        class="flex w-full max-w-md cursor-not-allowed items-center justify-center gap-2 rounded-xl border border-gray-200 bg-gray-100 px-6 py-4 text-lg font-semibold text-gray-400"
+                        class="flex w-full max-w-md cursor-not-allowed items-center justify-center gap-2 rounded-md border border-gray-200 bg-gray-100 px-4 py-2 text-sm font-medium text-gray-400"
                         title="Ningún hijo tiene puntos para canjear"
                     >
-                        <span class="text-2xl" aria-hidden="true">💰</span>
+                        <span class="text-xl" aria-hidden="true">💰</span>
                         Canje de puntos
+                    </div>
+                    <div
+                        v-if="showInstallButton && !isStandalone"
+                        class="flex w-full max-w-md items-center justify-between gap-3 rounded-md border border-indigo-200 bg-indigo-50 px-4 py-3"
+                    >
+                        <span class="text-sm font-medium text-indigo-800">
+                            Instalar Chanta Puntos en tu teléfono
+                        </span>
+                        <PrimaryButton type="button" class="shrink-0" @click="installApp">
+                            Instalar
+                        </PrimaryButton>
                     </div>
                 </div>
 
@@ -291,10 +296,10 @@ function shareApp() {
                 <div class="mt-8 flex w-full max-w-md flex-col items-center rounded-xl border border-gray-200 bg-white p-6 shadow-sm sm:mx-0">
                     <button
                         type="button"
-                        class="flex w-full items-center justify-center gap-2 rounded-xl bg-green-600 px-6 py-4 text-lg font-semibold text-white shadow-md transition hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                        class="flex w-full max-w-md items-center justify-center gap-2 rounded-md border border-transparent bg-green-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition duration-150 ease-in-out hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
                         @click="shareApp"
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
                         </svg>
                         Compartí esta app
@@ -355,13 +360,9 @@ function shareApp() {
                         </p>
                     </div>
                     <div class="flex justify-end gap-2 pt-4">
-                        <button
-                            type="button"
-                            class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                            @click="showAddModal = false"
-                        >
+                        <SecondaryButton type="button" @click="showAddModal = false">
                             Cancelar
-                        </button>
+                        </SecondaryButton>
                         <PrimaryButton type="submit" :disabled="addForm.processing">
                             Sumar
                         </PrimaryButton>
@@ -418,13 +419,9 @@ function shareApp() {
                         </p>
                     </div>
                     <div class="flex justify-end gap-2 pt-4">
-                        <button
-                            type="button"
-                            class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                            @click="showSubtractModal = false"
-                        >
+                        <SecondaryButton type="button" @click="showSubtractModal = false">
                             Cancelar
-                        </button>
+                        </SecondaryButton>
                         <PrimaryButton type="submit" :disabled="subtractForm.processing">
                             Restar
                         </PrimaryButton>
@@ -467,31 +464,52 @@ function shareApp() {
                     </div>
                     <div>
                         <InputLabel value="Foto (opcional)" />
-                        <div class="mt-2 flex items-center gap-4">
+                        <div class="mt-2 flex flex-wrap items-center gap-3">
                             <div
                                 v-if="editAvatarPreview"
                                 class="h-16 w-16 overflow-hidden rounded-full border-2 border-gray-200"
                             >
                                 <img :src="editAvatarPreview" alt="Vista previa" class="h-full w-full object-cover" />
                             </div>
-                            <input
-                                type="file"
-                                accept="image/*"
-                                class="block w-full text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-indigo-700 hover:file:bg-indigo-100"
-                                @change="onEditAvatarChange"
-                            />
+                            <div class="flex flex-wrap gap-2">
+                                <input
+                                    ref="editCameraInputRef"
+                                    type="file"
+                                    accept="image/*"
+                                    capture="environment"
+                                    class="hidden"
+                                    @change="onEditAvatarChange"
+                                />
+                                <input
+                                    ref="editFileInputRef"
+                                    type="file"
+                                    accept="image/*"
+                                    class="hidden"
+                                    @change="onEditAvatarChange"
+                                />
+                                <button
+                                    type="button"
+                                    class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+                                    @click="editCameraInputRef?.click()"
+                                >
+                                    Sacar foto
+                                </button>
+                                <button
+                                    type="button"
+                                    class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+                                    @click="editFileInputRef?.click()"
+                                >
+                                    Elegir de galería
+                                </button>
+                            </div>
                         </div>
                         <p class="mt-1 text-xs text-gray-500">Sube una nueva imagen para reemplazar la actual.</p>
                         <InputError :message="editForm.errors.avatar" />
                     </div>
                     <div class="flex justify-end gap-2">
-                        <button
-                            type="button"
-                            class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                            @click="showEditModal = false"
-                        >
+                        <SecondaryButton type="button" @click="showEditModal = false">
                             Cancelar
-                        </button>
+                        </SecondaryButton>
                         <PrimaryButton type="submit" :disabled="editForm.processing">
                             Guardar
                         </PrimaryButton>
