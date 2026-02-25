@@ -1,7 +1,8 @@
 <script setup>
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
+import PWAInstallInstructions from '@/Components/PWAInstallInstructions.vue';
+import { usePWAInstall } from '@/composables/usePWAInstall';
 import { Head, Link } from '@inertiajs/vue3';
-import { onMounted, ref } from 'vue';
 
 const props = defineProps({
     canLogin: { type: Boolean },
@@ -18,58 +19,15 @@ const props = defineProps({
     },
 });
 
-const INSTALL_DISMISSED_KEY = 'chanta-puntos-install-dismissed';
-
-const deferredPrompt = ref(null);
-const showInstallButton = ref(false);
-const isStandalone = ref(false);
-
-function isPWAStandalone() {
-    if (typeof window === 'undefined') return false;
-    return (
-        window.matchMedia('(display-mode: standalone)').matches ||
-        window.navigator.standalone === true
-    );
-}
-
-function requestInstall() {
-    if (!deferredPrompt.value) return;
-    deferredPrompt.value.prompt();
-    deferredPrompt.value.userChoice.then((result) => {
-        if (result.outcome === 'accepted') {
-            showInstallButton.value = false;
-        }
-        deferredPrompt.value = null;
-    });
-}
-
-function dismissInstall() {
-    showInstallButton.value = false;
-    try {
-        localStorage.setItem(INSTALL_DISMISSED_KEY, '1');
-    } catch (_) {}
-}
-
-onMounted(() => {
-    isStandalone.value = isPWAStandalone();
-    if (isStandalone.value) {
-        showInstallButton.value = false;
-        return;
-    }
-    try {
-        if (localStorage.getItem(INSTALL_DISMISSED_KEY)) {
-            showInstallButton.value = false;
-            return;
-        }
-    } catch (_) {}
-
-    const handler = (e) => {
-        e.preventDefault();
-        deferredPrompt.value = e;
-        showInstallButton.value = true;
-    };
-    window.addEventListener('beforeinstallprompt', handler);
-});
+const {
+    showInstallBanner,
+    isStandalone,
+    isMobile,
+    requestInstall,
+    dismissBanner,
+    showInstructionsModal,
+    closeInstructions,
+} = usePWAInstall();
 </script>
 
 <template>
@@ -120,7 +78,7 @@ onMounted(() => {
                     </p>
                     <div class="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
                         <button
-                            v-if="showInstallButton"
+                            v-if="showInstallBanner"
                             type="button"
                             @click="requestInstall"
                             class="inline-flex w-full max-w-xs items-center justify-center gap-2 rounded-md border border-transparent bg-gray-800 px-5 py-3 text-sm font-medium text-white shadow-sm transition duration-150 ease-in-out hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
@@ -137,7 +95,7 @@ onMounted(() => {
                         >
                             Abrir Chanta Puntos
                         </Link>
-                        <template v-if="canRegister && !showInstallButton && !isStandalone">
+                        <template v-if="canRegister && !showInstallBanner && !isStandalone">
                             <Link
                                 :href="route('register')"
                                 class="inline-flex w-full max-w-xs items-center justify-center rounded-md border border-transparent bg-gray-800 px-5 py-3 text-sm font-medium text-white shadow-sm transition duration-150 ease-in-out hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
@@ -282,7 +240,7 @@ onMounted(() => {
                     </p>
                     <div class="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
                         <button
-                            v-if="showInstallButton"
+                            v-if="showInstallBanner"
                             type="button"
                             @click="requestInstall"
                             class="inline-flex w-full max-w-xs items-center justify-center gap-2 rounded-md border border-transparent bg-white px-5 py-3 text-sm font-medium text-gray-800 shadow-sm transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-indigo-600 sm:w-auto"
@@ -336,5 +294,7 @@ onMounted(() => {
                 </nav>
             </div>
         </footer>
+
+        <PWAInstallInstructions :show="showInstructionsModal" @close="closeInstructions" />
     </div>
 </template>

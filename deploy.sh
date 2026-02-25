@@ -19,6 +19,8 @@ echo "==> Instalando dependencias Node y compilando assets..."
 export NVM_DIR="${NVM_DIR:-$HOME/tmp/nvm}"
 export npm_config_cache="${npm_config_cache:-$HOME/tmp/.npm}"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+# Document root es public_html/public → los assets deben servirse en /build/assets/
+export VITE_BASE_PATH=/build
 npm ci --no-audit --no-fund --legacy-peer-deps
 npm run build
 

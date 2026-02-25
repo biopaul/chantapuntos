@@ -5,10 +5,12 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import Modal from '@/Components/Modal.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import PWAInstallInstructions from '@/Components/PWAInstallInstructions.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
+import { usePWAInstall } from '@/composables/usePWAInstall';
 import { resizeImageFile } from '@/utils/resizeImage';
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import { onMounted, ref } from 'vue';
+import { ref } from 'vue';
 
 const props = defineProps({
     children: { type: Array, required: true },
@@ -118,29 +120,13 @@ function shareChild(child) {
     sharingChildId.value = null;
 }
 
-const installPromptEvent = ref(null);
-const showInstallButton = ref(false);
-const isStandalone = ref(false);
-
-onMounted(() => {
-    isStandalone.value =
-        window.matchMedia('(display-mode: standalone)').matches ||
-        window.navigator.standalone === true;
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        installPromptEvent.value = e;
-        showInstallButton.value = true;
-    });
-});
-
-function installApp() {
-    if (!installPromptEvent.value) return;
-    installPromptEvent.value.prompt();
-    installPromptEvent.value.userChoice.then(() => {
-        showInstallButton.value = false;
-        installPromptEvent.value = null;
-    });
-}
+const {
+    showInstallBanner,
+    isStandalone,
+    requestInstall,
+    showInstructionsModal,
+    closeInstructions,
+} = usePWAInstall();
 
 function shareApp() {
     const url = window.location.origin + '/';
@@ -204,13 +190,13 @@ function shareApp() {
                         Canje de puntos
                     </div>
                     <div
-                        v-if="showInstallButton && !isStandalone"
+                        v-if="showInstallBanner && !isStandalone"
                         class="flex w-full max-w-md items-center justify-between gap-3 rounded-md border border-indigo-200 bg-indigo-50 px-4 py-3"
                     >
                         <span class="text-sm font-medium text-indigo-800">
                             Instalar Chanta Puntos en tu teléfono
                         </span>
-                        <PrimaryButton type="button" class="shrink-0" @click="installApp">
+                        <PrimaryButton type="button" class="shrink-0" @click="requestInstall">
                             Instalar
                         </PrimaryButton>
                     </div>
@@ -515,5 +501,7 @@ function shareApp() {
                 </form>
             </div>
         </Modal>
+
+        <PWAInstallInstructions :show="showInstructionsModal" @close="closeInstructions" />
     </AuthenticatedLayout>
 </template>

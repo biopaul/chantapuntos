@@ -21,7 +21,10 @@ function isActive(...names) {
                         class="flex min-w-0 flex-1 items-center gap-2 rounded-md py-1 pr-2 transition hover:bg-gray-200/80 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-[#e8e8e8]"
                         title="Ir al perfil"
                     >
-                        <span class="shrink-0 text-gray-600" aria-hidden="true">
+                        <span
+                            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-black text-white"
+                            aria-hidden="true"
+                        >
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>
