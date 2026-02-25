@@ -40,6 +40,7 @@ class HandleInertiaRequests extends Middleware
                 'new_invitation_url' => fn () => $request->session()->get('new_invitation_url'),
             ],
             'logoUrl' => asset('images/logo.png'),
+            'app_version' => config('app.version'),
         ];
     }
 }

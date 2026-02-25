@@ -1,15 +1,22 @@
 <script setup>
-import ApplicationLogo from '@/Components/ApplicationLogo.vue';
-import { Link } from '@inertiajs/vue3';
+import UpdateRequiredModal from '@/Components/UpdateRequiredModal.vue';
+import { Link, usePage } from '@inertiajs/vue3';
+
+const page = usePage();
+const logoUrl = page.props.logoUrl ?? '/images/logo.png';
 </script>
 
 <template>
     <div
         class="flex min-h-screen flex-col items-center bg-gray-100 pt-6 sm:justify-center sm:pt-0"
     >
-        <div>
-            <Link href="/" class="flex items-center">
-                <ApplicationLogo class="h-12 max-h-12 w-auto" />
+        <div class="h-24 sm:h-28">
+            <Link href="/" class="flex h-full items-center">
+                <img
+                    :src="logoUrl"
+                    alt="Chanta Puntos"
+                    class="block h-full w-auto object-contain object-left"
+                />
             </Link>
         </div>
 
@@ -18,5 +25,6 @@ import { Link } from '@inertiajs/vue3';
         >
             <slot />
         </div>
+        <UpdateRequiredModal />
     </div>
 </template>
