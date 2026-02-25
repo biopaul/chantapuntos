@@ -16,14 +16,47 @@ if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
     });
 }
 
+/** Detecta si la app se está ejecutando como PWA instalada (standalone), no en el navegador. */
+function isPWA() {
+    if (typeof window === 'undefined') return false;
+    if (window.matchMedia('(display-mode: standalone)').matches) return true;
+    if (window.navigator.standalone === true) return true; // iOS
+    return false;
+}
+
+/** Obtiene el nombre del componente de la página inicial (Inertia data-page). */
+function getInitialPageComponent() {
+    const el = document.getElementById('app');
+    const dataPage = el && el.getAttribute('data-page');
+    if (!dataPage) return null;
+    try {
+        const page = JSON.parse(dataPage);
+        return page && page.component ? page.component : null;
+    } catch (_) {
+        return null;
+    }
+}
+
+/** Path base de la app (ej. /puntoschanta/public) para no depender de la raíz del host. */
+function getAppBasePath() {
+    if (typeof window === 'undefined') return '';
+    const pathname = window.location.pathname || '';
+    const parts = pathname.split('/').filter(Boolean);
+    const publicIndex = parts.indexOf('public');
+    return publicIndex >= 0 ? '/' + parts.slice(0, publicIndex + 1).join('/') : '';
+}
+
+/** Muestra el overlay de splash solo en PWA y solo en Dashboard. */
 function showSplash(el) {
+    const base = getAppBasePath();
+    const splashSrc = base ? `${base}/images/splash.png` : '/images/splash.png';
     el.innerHTML = `
         <div id="pwa-splash" style="
             position: fixed; inset: 0; z-index: 99999;
             background: ${SPLASH_BG};
             display: flex; align-items: center; justify-content: center;
         ">
-            <img src="/images/splash.png" alt="Chanta Puntos" style="
+            <img src="${splashSrc}" alt="Chanta Puntos" style="
                 max-width: 90%; max-height: 80%; object-fit: contain;
             " onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
             <div style="display: none; text-align: center; color: #333; font-size: 1.5rem; font-weight: 600;">
@@ -40,7 +73,7 @@ function preloadPageChunks() {
 
 function prefetchRoutes() {
     if (typeof window === 'undefined' || !window.route) return Promise.resolve();
-    const routes = ['dashboard', 'history.index', 'profile.edit', 'redemptions.create', 'actions.index', 'invitations.index', 'onboarding'];
+    const routes = ['dashboard', 'history.index', 'profile.edit', 'redemptions.create', 'actions.index', 'invitations.index', 'onboarding', 'settings.index'];
     return Promise.all(
         routes.map((name) => {
             try {
@@ -57,13 +90,20 @@ function runSplashAndPreload() {
     const el = document.getElementById('app');
     if (!el) return Promise.resolve();
 
-    showSplash(el);
+    const initialComponent = getInitialPageComponent();
+    const showSplashThisLoad = isPWA() && initialComponent === 'Dashboard';
+
+    if (showSplashThisLoad) {
+        showSplash(el);
+    }
 
     const preloadPromise = Promise.all([
-        preloadPageChunks(),
+        preloadPageChunks().catch(() => {}),
         prefetchRoutes(),
     ]);
-    const minDelayPromise = new Promise((r) => setTimeout(r, SPLASH_DURATION_MS));
+    const minDelayPromise = showSplashThisLoad
+        ? new Promise((r) => setTimeout(r, SPLASH_DURATION_MS))
+        : Promise.resolve();
 
     return Promise.all([preloadPromise, minDelayPromise]).then(() => {
         el.innerHTML = '';

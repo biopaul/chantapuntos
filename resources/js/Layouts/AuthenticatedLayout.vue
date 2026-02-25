@@ -13,24 +13,39 @@ function isActive(...names) {
 <template>
     <div>
         <div class="min-h-screen bg-gray-100">
-            <!-- Cabecera fija: usuario + Cerrar sesión -->
-            <header class="fixed left-0 right-0 top-0 z-50 border-b border-gray-200 bg-white shadow-sm">
+            <!-- Cabecera fija: usuario + Cerrar sesión (sin borde para unificar con barra de estado) -->
+            <header class="fixed left-0 right-0 top-0 z-50 bg-[#e8e8e8]">
                 <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-2 px-4 py-2 sm:px-6 lg:px-8">
-                    <div class="min-w-0 flex-1">
-                        <p class="truncate text-base font-semibold leading-tight text-gray-800">
-                            {{ page.props.auth?.user?.name ?? '' }}
-                        </p>
-                        <p class="truncate text-xs font-medium text-gray-500">
-                            {{ page.props.auth?.user?.email ?? '' }}
-                        </p>
-                    </div>
+                    <Link
+                        :href="route('profile.edit')"
+                        class="flex min-w-0 flex-1 items-center gap-2 rounded-md py-1 pr-2 transition hover:bg-gray-200/80 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-[#e8e8e8]"
+                        title="Ir al perfil"
+                    >
+                        <span class="shrink-0 text-gray-600" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                        </span>
+                        <div class="min-w-0 flex-1 truncate">
+                            <p class="truncate text-base font-semibold leading-tight text-gray-800">
+                                {{ page.props.auth?.user?.name ?? '' }}
+                            </p>
+                            <p class="truncate text-xs font-medium text-gray-500">
+                                {{ page.props.auth?.user?.email ?? '' }}
+                            </p>
+                        </div>
+                    </Link>
                     <Link
                         :href="route('logout')"
                         method="post"
                         as="button"
-                        class="shrink-0 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                        class="shrink-0 rounded-md p-2 text-gray-800 transition hover:bg-gray-200/80 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-[#e8e8e8]"
+                        title="Cerrar sesión"
+                        aria-label="Cerrar sesión"
                     >
-                        Cerrar sesión
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
                     </Link>
                 </div>
             </header>
@@ -72,8 +87,9 @@ function isActive(...names) {
                         class="flex flex-col items-center justify-center gap-0.5 py-2 px-3 transition"
                         :class="isActive('dashboard') ? 'text-indigo-600' : 'text-gray-500'"
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11v2a1 1 0 01-1 1h2m-6-1a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6-1h6" />
+                        <!-- Casa simple: techo + cuerpo -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 4L4 12h2v8h4v-5h4v5h4v-8h2L12 4z" />
                         </svg>
                         <span class="text-xs font-medium">Inicio</span>
                     </Link>
@@ -92,20 +108,23 @@ function isActive(...names) {
                         class="flex flex-col items-center justify-center gap-0.5 py-2 px-3 transition"
                         :class="isActive('redemptions.create') ? 'text-indigo-600' : 'text-gray-500'"
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 003 3h-15a3 3 0 003-3m-9 0V3.375c0-.621.504-1.125 1.125-1.125h.871M7.5 18.75V3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 007.73 9.728M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 002.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a6.726 6.726 0 01-2.749 1.35m0 0a6.772 6.772 0 01-3.044 0" />
+                        <!-- Bolsa (canjes / compras) -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                         </svg>
                         <span class="text-xs font-medium">Canjes</span>
                     </Link>
                     <Link
-                        :href="route('profile.edit')"
+                        :href="route('settings.index')"
                         class="flex flex-col items-center justify-center gap-0.5 py-2 px-3 transition"
-                        :class="isActive('profile.edit') ? 'text-indigo-600' : 'text-gray-500'"
+                        :class="isActive('settings.index') ? 'text-indigo-600' : 'text-gray-500'"
                     >
+                        <!-- Engranaje / Configuración -->
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
-                        <span class="text-xs font-medium">Perfil</span>
+                        <span class="text-xs font-medium">Configuración</span>
                     </Link>
                 </div>
             </nav>

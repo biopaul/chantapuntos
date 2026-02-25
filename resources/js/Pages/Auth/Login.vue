@@ -22,8 +22,15 @@ const form = useForm({
     remember: false,
 });
 
+function getLoginUrl() {
+    try {
+        if (typeof route === 'function') return route('login');
+    } catch (_) {}
+    return window.location.pathname === '/login' ? '/login' : '/login';
+}
+
 const submit = () => {
-    form.post(route('login'), {
+    form.post(getLoginUrl(), {
         onFinish: () => form.reset('password'),
     });
 };
@@ -86,6 +93,7 @@ const submit = () => {
                 </Link>
 
                 <PrimaryButton
+                    type="submit"
                     class="ms-4"
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"

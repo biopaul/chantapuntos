@@ -1,7 +1,12 @@
 import { readFileSync } from 'fs';
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import vue from '@vitejs/plugin-vue';
+
+// Cargar .env para que VITE_BASE_PATH esté disponible en el build
+const env = loadEnv(process.env.NODE_ENV || 'production', process.cwd(), '');
+const basePath = env.VITE_BASE_PATH || process.env.VITE_BASE_PATH;
+const base = basePath ? String(basePath).replace(/\/?$/, '') + '/' : '/';
 
 let appVersion = '1.0.0';
 try {
@@ -10,6 +15,7 @@ try {
 } catch (_) {}
 
 export default defineConfig({
+    base,
     define: {
         __APP_VERSION__: JSON.stringify(appVersion),
     },

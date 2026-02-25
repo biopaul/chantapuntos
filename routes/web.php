@@ -9,6 +9,7 @@ use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\PointTransactionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RedemptionController;
+use App\Http\Controllers\SettingsController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -49,6 +50,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/history', HistoryController::class)->name('history.index');
     Route::get('/invitations', [InvitationController::class, 'index'])->name('invitations.index');
     Route::post('/invitations', [InvitationController::class, 'store'])->name('invitations.store');
+    Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
 });
 
 Route::middleware('auth')->group(function () {
