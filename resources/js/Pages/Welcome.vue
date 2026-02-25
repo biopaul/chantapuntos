@@ -112,10 +112,10 @@ onMounted(() => {
             <!-- Hero -->
             <section class="px-4 py-12 sm:px-6 sm:py-16">
                 <div class="mx-auto max-w-4xl text-center">
-                    <h1 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl md:text-5xl">
+                    <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl md:text-6xl">
                         Ayudá a los chicos a sumar en casa
                     </h1>
-                    <p class="mt-4 text-lg text-gray-600 sm:text-xl">
+                    <p class="mt-5 text-xl text-gray-600 sm:text-2xl">
                         Puntos y recompensas para las tareas de cada día. Un juego simple para que entiendan el valor de su aporte en el hogar.
                     </p>
                     <div class="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
@@ -159,10 +159,10 @@ onMounted(() => {
             <!-- Beneficio -->
             <section class="border-t border-gray-200 bg-white px-4 py-12 sm:px-6 sm:py-16">
                 <div class="mx-auto max-w-3xl text-center">
-                    <p class="text-lg text-gray-700 sm:text-xl">
+                    <p class="text-xl text-gray-700 sm:text-2xl">
                         Diseñada para papás y mamás: definí tareas, sumá puntos y dejá que canjeen recompensas.
                     </p>
-                    <p class="mt-4 text-gray-600">
+                    <p class="mt-5 text-lg text-gray-600 sm:text-xl">
                         Pequeñas tareas, gran aprendizaje: ordenar, colaborar y ver que su esfuerzo vale.
                     </p>
                 </div>
@@ -171,28 +171,28 @@ onMounted(() => {
             <!-- Cómo funciona -->
             <section class="px-4 py-12 sm:px-6 sm:py-16">
                 <div class="mx-auto max-w-4xl">
-                    <h2 class="text-center text-2xl font-bold text-gray-900 sm:text-3xl">
+                    <h2 class="text-center text-3xl font-bold text-gray-900 sm:text-4xl">
                         Cómo funciona
                     </h2>
-                    <div class="mt-10 grid gap-8 sm:grid-cols-3 sm:gap-6">
+                    <div class="mt-12 grid gap-8 sm:grid-cols-3 sm:gap-6">
                         <div class="flex flex-col items-center rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200/80">
                             <span class="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-100 text-xl font-bold text-indigo-600">1</span>
-                            <h3 class="mt-4 text-lg font-semibold text-gray-900">Definí tareas</h3>
-                            <p class="mt-2 text-center text-sm text-gray-600">
+                            <h3 class="mt-4 text-xl font-semibold text-gray-900">Definí tareas</h3>
+                            <p class="mt-3 text-center text-base text-gray-600 sm:text-lg">
                                 Creá acciones con puntos: ordenar el cuarto, poner la mesa, guardar juguetes.
                             </p>
                         </div>
                         <div class="flex flex-col items-center rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200/80">
                             <span class="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-100 text-xl font-bold text-indigo-600">2</span>
-                            <h3 class="mt-4 text-lg font-semibold text-gray-900">Sumá puntos</h3>
-                            <p class="mt-2 text-center text-sm text-gray-600">
+                            <h3 class="mt-4 text-xl font-semibold text-gray-900">Sumá puntos</h3>
+                            <p class="mt-3 text-center text-base text-gray-600 sm:text-lg">
                                 Los chicos completan tareas y suman puntos. Vos validás desde la app.
                             </p>
                         </div>
                         <div class="flex flex-col items-center rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200/80">
                             <span class="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-100 text-xl font-bold text-indigo-600">3</span>
-                            <h3 class="mt-4 text-lg font-semibold text-gray-900">Canjeá recompensas</h3>
-                            <p class="mt-2 text-center text-sm text-gray-600">
+                            <h3 class="mt-4 text-xl font-semibold text-gray-900">Canjeá recompensas</h3>
+                            <p class="mt-3 text-center text-base text-gray-600 sm:text-lg">
                                 Definí premios y dejá que canjeen con sus puntos cuando lleguen.
                             </p>
                         </div>
@@ -200,33 +200,63 @@ onMounted(() => {
                 </div>
             </section>
 
+            <!-- Base profesional y método -->
+            <section class="border-t border-gray-200 bg-white px-4 py-12 sm:px-6 sm:py-16">
+                <div class="mx-auto max-w-3xl text-center">
+                    <h2 class="text-3xl font-bold text-gray-900 sm:text-4xl">
+                        Desarrollada con respaldo profesional
+                    </h2>
+                    <p class="mt-6 text-xl text-gray-700 sm:text-2xl">
+                        La aplicación está desarrollada bajo la supervisión de psicólogos especializados en adolescencia.
+                    </p>
+                    <p class="mt-5 text-lg text-gray-600 sm:text-xl">
+                        Es un método probado para incentivar actividades proactivas mediante la gamificación, implementada con tecnologías de fácil acceso para toda la familia.
+                    </p>
+                </div>
+            </section>
+
             <!-- Galería mockups -->
             <section class="border-t border-gray-200 bg-gray-100/50 px-4 py-12 sm:px-6 sm:py-16">
-                <div class="mx-auto max-w-4xl">
-                    <h2 class="text-center text-2xl font-bold text-gray-900 sm:text-3xl">
+                <div class="mx-auto max-w-md">
+                    <h2 class="text-center text-3xl font-bold text-gray-900 sm:text-4xl">
                         Así se ve la app
                     </h2>
-                    <div class="mt-10 flex gap-6 overflow-x-auto pb-4 scroll-smooth sm:justify-center sm:overflow-visible">
-                        <div class="min-w-[240px] flex-shrink-0 sm:min-w-0">
-                            <img
-                                :src="landingImages?.dashboard ?? '/images/landing/mockup-dashboard.png'"
-                                alt="Pantalla del dashboard con niños y puntos"
-                                class="mx-auto h-auto max-h-[420px] w-auto max-w-[240px] rounded-2xl shadow-lg"
-                            />
+                    <div class="mt-12 flex flex-col items-center gap-10">
+                        <div class="flex w-full max-w-[220px] flex-col items-center text-center">
+                            <div class="w-full overflow-hidden rounded-2xl shadow-lg aspect-[9/19.5] bg-white">
+                                <img
+                                    :src="landingImages?.dashboard ?? '/images/landing/mockup-dashboard.png'"
+                                    alt="Pantalla del dashboard con niños y puntos"
+                                    class="h-full w-full object-cover object-center"
+                                />
+                            </div>
+                            <p class="mt-3 text-base text-gray-700 sm:text-lg">
+                                Dashboard con los chicos y sus puntos. Sumá o restá puntos según las tareas que cumplan.
+                            </p>
                         </div>
-                        <div class="min-w-[240px] flex-shrink-0 sm:min-w-0">
-                            <img
-                                :src="landingImages?.tareas ?? '/images/landing/mockup-tareas.png'"
-                                alt="Lista de tareas con puntos"
-                                class="mx-auto h-auto max-h-[420px] w-auto max-w-[240px] rounded-2xl shadow-lg"
-                            />
+                        <div class="flex w-full max-w-[220px] flex-col items-center text-center">
+                            <div class="w-full overflow-hidden rounded-2xl shadow-lg aspect-[9/19.5] bg-white">
+                                <img
+                                    :src="landingImages?.tareas ?? '/images/landing/mockup-tareas.png'"
+                                    alt="Lista de tareas con puntos"
+                                    class="h-full w-full object-cover object-center"
+                                />
+                            </div>
+                            <p class="mt-3 text-base text-gray-700 sm:text-lg">
+                                Definí tareas con sus puntos. Cada acción puede sumar o restar según lo que acuerden en familia.
+                            </p>
                         </div>
-                        <div class="min-w-[240px] flex-shrink-0 sm:min-w-0">
-                            <img
-                                :src="landingImages?.recompensas ?? '/images/landing/mockup-recompensas.png'"
-                                alt="Pantalla de recompensas para canjear"
-                                class="mx-auto h-auto max-h-[420px] w-auto max-w-[240px] rounded-2xl shadow-lg"
-                            />
+                        <div class="flex w-full max-w-[220px] flex-col items-center text-center">
+                            <div class="w-full overflow-hidden rounded-2xl shadow-lg aspect-[9/19.5] bg-white">
+                                <img
+                                    :src="landingImages?.recompensas ?? '/images/landing/mockup-recompensas.png'"
+                                    alt="Pantalla de recompensas para canjear"
+                                    class="h-full w-full object-cover object-center"
+                                />
+                            </div>
+                            <p class="mt-3 text-base text-gray-700 sm:text-lg">
+                                Canjeá recompensas. Los chicos usan sus puntos para premios que ustedes elijan.
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -235,7 +265,7 @@ onMounted(() => {
             <!-- Copy de conversión -->
             <section class="px-4 py-12 sm:px-6 sm:py-16">
                 <div class="mx-auto max-w-2xl text-center">
-                    <p class="text-xl font-medium text-gray-800">
+                    <p class="text-2xl font-medium text-gray-800 sm:text-3xl">
                         Menos peleas, más complicidad. Instalá la app y probala en familia.
                     </p>
                 </div>
@@ -244,10 +274,10 @@ onMounted(() => {
             <!-- CTA final -->
             <section class="border-t border-gray-200 bg-indigo-600 px-4 py-12 sm:px-6 sm:py-16">
                 <div class="mx-auto max-w-2xl text-center">
-                    <h2 class="text-2xl font-bold text-white sm:text-3xl">
+                    <h2 class="text-3xl font-bold text-white sm:text-4xl">
                         Empezá hoy
                     </h2>
-                    <p class="mt-3 text-indigo-100">
+                    <p class="mt-4 text-lg text-indigo-100 sm:text-xl">
                         Gratis, sin complicaciones. Creá tu cuenta o instalá la app en tu celular.
                     </p>
                     <div class="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
@@ -288,18 +318,18 @@ onMounted(() => {
         <!-- Footer -->
         <footer class="border-t border-gray-200 bg-white px-4 py-8">
             <div class="mx-auto flex max-w-4xl flex-col items-center justify-between gap-4 sm:flex-row">
-                <span class="text-sm text-gray-500">Chanta Puntos — Puntos y recompensas para la familia</span>
+                <span class="text-base text-gray-500">Chanta Puntos — Puntos y recompensas para la familia</span>
                 <nav v-if="canLogin" class="flex gap-6">
                     <Link
                         :href="route('login')"
-                        class="text-sm font-medium text-gray-600 hover:text-indigo-600"
+                        class="text-base font-medium text-gray-600 hover:text-indigo-600"
                     >
                         Iniciar sesión
                     </Link>
                     <Link
                         v-if="canRegister"
                         :href="route('register')"
-                        class="text-sm font-medium text-gray-600 hover:text-indigo-600"
+                        class="text-base font-medium text-gray-600 hover:text-indigo-600"
                     >
                         Registrarme
                     </Link>

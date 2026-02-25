@@ -14,7 +14,11 @@ echo "==> Instalando dependencias PHP..."
 composer install --no-dev --optimize-autoloader --no-interaction
 
 echo "==> Instalando dependencias Node y compilando assets..."
-npm ci --no-audit --no-fund
+# NVM en tmp (servidor Cloudways: home no escribible)
+export NVM_DIR="${NVM_DIR:-$HOME/tmp/nvm}"
+export npm_config_cache="${npm_config_cache:-$HOME/tmp/.npm}"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+npm ci --no-audit --no-fund --legacy-peer-deps
 npm run build
 
 echo "==> Ejecutando migraciones..."

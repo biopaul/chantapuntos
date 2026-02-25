@@ -47,6 +47,9 @@ const hasChildrenWithPoints = computed(() => props.children.length > 0);
             <div class="mx-auto max-w-xl sm:px-6 lg:px-8">
                 <div class="overflow-hidden bg-white shadow-sm sm:rounded-xl">
                     <div class="p-6">
+                        <div class="mb-6 flex justify-center" aria-hidden="true">
+                            <span class="text-7xl">💰</span>
+                        </div>
                         <p class="mb-6 text-gray-600">
                             Elige el hijo, describe el canje (ej. "Llevar a Isabella al cumpleaños de Juanita") y los puntos a restar.
                         </p>

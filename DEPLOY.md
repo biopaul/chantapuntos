@@ -13,7 +13,8 @@ Si al conectar por SSH ves **"Shell access is disabled!"**, el usuario no tiene 
 - **Dominio:** https://chantas.ar/
 - **IP:** 44.208.119.82
 - **Usuario SSH:** deploy-chantas
-- **Ruta aplicación:** `/public_html` (document root del sitio debe ser `public_html/public`)
+- **Ruta aplicación:** `public_html` (home del usuario: `/mnt/data/home/1587473.cloudwaysapps.com/davmsrjqvv`)
+- **Document root:** En Cloudways, el document root del dominio debe ser **`public_html/public`** (no solo `public_html`), para que Laravel funcione correctamente.
 
 ## Primer despliegue (una sola vez)
 
@@ -29,6 +30,7 @@ cd $HOME/public_html
 ### 2. Clonar el repositorio (contenido en el directorio actual)
 
 ```bash
+cd ~/public_html
 git clone https://github.com/biopaul/chantapuntos.git .
 ```
 
@@ -69,9 +71,9 @@ php artisan key:generate
 
 ```bash
 composer install --no-dev --optimize-autoloader --no-interaction
-npm ci --no-audit --no-fund
-npm run build
 ```
+
+**Assets (Vite):** En el servidor está instalado **NVM** en `~/tmp/nvm` (Node LTS + npm), porque el home del usuario no es escribible. La caché de npm está en `~/tmp/.npm`. El script `deploy.sh` carga NVM y ejecuta `npm ci --legacy-peer-deps` y `npm run build` automáticamente.
 
 ### 5. Migraciones y cache
 
