@@ -109,15 +109,13 @@ function submitEditChild() {
 }
 
 const sharingChildId = ref(null);
-async function shareChild(child) {
+function shareChild(child) {
+    const url = child.whatsapp_share_url;
+    if (!url) return;
     sharingChildId.value = child.id;
-    try {
-        const res = await fetch(route('children.share-url', child.id));
-        const data = await res.json();
-        if (data.whatsapp_url) window.open(data.whatsapp_url, '_blank');
-    } finally {
-        sharingChildId.value = null;
-    }
+    // Usar location.href en lugar de window.open para que funcione en móvil (no se bloquea como popup)
+    window.location.href = url;
+    sharingChildId.value = null;
 }
 
 const installPromptEvent = ref(null);
@@ -163,7 +161,7 @@ function shareApp() {
                 <Link
                     v-if="canInvite"
                     :href="route('invitations.index')"
-                    class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                    class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                 >
                     Invitar a otro padre
                 </Link>
@@ -175,7 +173,7 @@ function shareApp() {
                 <div class="mb-6 flex flex-col items-center gap-3">
                     <button
                         type="button"
-                        class="flex w-full max-w-md items-center justify-center gap-2 rounded-md border border-transparent bg-green-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition duration-150 ease-in-out hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                        class="flex w-full max-w-md items-center justify-center gap-2 rounded-md border border-transparent bg-green-600 px-5 py-3 text-sm font-medium text-white shadow-sm transition duration-150 ease-in-out hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
                         @click="openAdd"
                     >
                         <span aria-hidden="true">😊</span>
@@ -183,7 +181,7 @@ function shareApp() {
                     </button>
                     <button
                         type="button"
-                        class="flex w-full max-w-md items-center justify-center gap-2 rounded-md border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition duration-150 ease-in-out hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                        class="flex w-full max-w-md items-center justify-center gap-2 rounded-md border border-transparent bg-red-600 px-5 py-3 text-sm font-medium text-white shadow-sm transition duration-150 ease-in-out hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
                         @click="openSubtract"
                     >
                         <span aria-hidden="true">😢</span>
@@ -192,14 +190,14 @@ function shareApp() {
                     <Link
                         v-if="canRedeem"
                         :href="route('redemptions.create')"
-                        class="flex w-full max-w-md items-center justify-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                        class="flex w-full max-w-md items-center justify-center gap-2 rounded-md border border-gray-300 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                     >
                         <span class="text-xl" aria-hidden="true">💰</span>
                         Canje de puntos
                     </Link>
                     <div
                         v-else
-                        class="flex w-full max-w-md cursor-not-allowed items-center justify-center gap-2 rounded-md border border-gray-200 bg-gray-100 px-4 py-2 text-sm font-medium text-gray-400"
+                        class="flex w-full max-w-md cursor-not-allowed items-center justify-center gap-2 rounded-md border border-gray-200 bg-gray-100 px-5 py-3 text-sm font-medium text-gray-400"
                         title="Ningún hijo tiene puntos para canjear"
                     >
                         <span class="text-xl" aria-hidden="true">💰</span>
@@ -296,7 +294,7 @@ function shareApp() {
                 <div class="mt-8 flex w-full max-w-md flex-col items-center rounded-xl border border-gray-200 bg-white p-6 shadow-sm sm:mx-0">
                     <button
                         type="button"
-                        class="flex w-full max-w-md items-center justify-center gap-2 rounded-md border border-transparent bg-green-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition duration-150 ease-in-out hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                        class="flex w-full max-w-md items-center justify-center gap-2 rounded-md border border-transparent bg-green-600 px-5 py-3 text-sm font-medium text-white shadow-sm transition duration-150 ease-in-out hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
                         @click="shareApp"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">

@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="theme-color" content="#4f46e5">
+        <meta name="theme-color" content="#ffffff">
         <link rel="manifest" href="{{ asset('manifest.json') }}">
 
         <title inertia>{{ config('app.name', 'Laravel') }}</title>

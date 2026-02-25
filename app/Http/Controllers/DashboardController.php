@@ -8,6 +8,7 @@ use App\Http\Controllers\ChildController;
 use App\Models\Action;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -29,7 +30,17 @@ class DashboardController extends Controller
 
         $canRedeem = $children->contains(fn ($c) => $c->points > 0);
 
-        $childrenWithOwner = $children->map(fn ($c) => array_merge($c->toArray(), ['is_owner' => $c->user_id === $user->id]));
+        $childrenWithOwner = $children->map(function ($c) use ($user) {
+            $child = array_merge($c->toArray(), ['is_owner' => $c->user_id === $user->id]);
+            if (empty($c->share_token)) {
+                $c->update(['share_token' => Str::random(48)]);
+                $c->refresh();
+            }
+            $cardUrl = route('child.card', ['token' => $c->share_token], true);
+            $text = 'Mi ficha de puntos: ' . $cardUrl;
+            $child['whatsapp_share_url'] = 'https://wa.me/?text=' . rawurlencode($text);
+            return $child;
+        });
 
         return Inertia::render('Dashboard', [
             'children' => $childrenWithOwner->values(),

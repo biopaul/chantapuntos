@@ -91,14 +91,11 @@ function isCustom(action) {
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead>
                                     <tr>
-                                        <th class="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">
-                                            Nombre
+                                        <th class="max-w-[70%] px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">
+                                            Descripción
                                         </th>
                                         <th class="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">
                                             Puntaje
-                                        </th>
-                                        <th class="px-4 py-3 text-right text-xs font-medium uppercase text-gray-500">
-                                            Origen
                                         </th>
                                         <th class="px-4 py-3 text-right text-xs font-medium uppercase text-gray-500">
                                             Acciones
@@ -107,8 +104,16 @@ function isCustom(action) {
                                 </thead>
                                 <tbody class="divide-y divide-gray-200">
                                     <tr v-for="action in actions" :key="action.id">
-                                        <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-900">
-                                            {{ action.name }}
+                                        <td class="min-w-0 max-w-[70%] px-4 py-3 text-sm text-gray-900">
+                                            <div class="flex flex-wrap items-center gap-2">
+                                                <span class="min-w-0 break-words">{{ action.name }}</span>
+                                                <span
+                                                    class="shrink-0 rounded px-2 py-0.5 text-xs font-medium"
+                                                    :class="isCustom(action) ? 'bg-orange-100 text-orange-800' : 'bg-blue-100 text-blue-800'"
+                                                >
+                                                    {{ isCustom(action) ? 'Personal' : 'Sistema' }}
+                                                </span>
+                                            </div>
                                         </td>
                                         <td class="whitespace-nowrap px-4 py-3">
                                             <span
@@ -123,9 +128,6 @@ function isCustom(action) {
                                             >
                                                 {{ action.points > 0 ? '+' : '' }}{{ action.points }}
                                             </span>
-                                        </td>
-                                        <td class="whitespace-nowrap px-4 py-3 text-right text-xs text-gray-500">
-                                            {{ isCustom(action) ? 'Personal' : 'Sistema' }}
                                         </td>
                                         <td class="whitespace-nowrap px-4 py-3 text-right">
                                             <div class="inline-flex items-center gap-2">

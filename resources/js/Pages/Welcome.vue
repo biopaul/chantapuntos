@@ -85,21 +85,21 @@ onMounted(() => {
                     <Link
                         v-if="$page.props.auth?.user"
                         :href="route('dashboard')"
-                        class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                        class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                     >
                         Ir al dashboard
                     </Link>
                     <template v-else>
                         <Link
                             :href="route('login')"
-                            class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                            class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                         >
                             Iniciar sesión
                         </Link>
                         <Link
                             v-if="canRegister"
                             :href="route('register')"
-                            class="inline-flex items-center justify-center rounded-md border border-transparent bg-gray-800 px-4 py-2 text-sm font-medium text-white shadow-sm transition duration-150 ease-in-out hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                            class="inline-flex items-center justify-center rounded-md border border-transparent bg-gray-800 px-5 py-3 text-sm font-medium text-white shadow-sm transition duration-150 ease-in-out hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                         >
                             Registrarme
                         </Link>
@@ -123,7 +123,7 @@ onMounted(() => {
                             v-if="showInstallButton"
                             type="button"
                             @click="requestInstall"
-                            class="inline-flex w-full max-w-xs items-center justify-center gap-2 rounded-md border border-transparent bg-gray-800 px-4 py-2 text-sm font-medium text-white shadow-sm transition duration-150 ease-in-out hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
+                            class="inline-flex w-full max-w-xs items-center justify-center gap-2 rounded-md border border-transparent bg-gray-800 px-5 py-3 text-sm font-medium text-white shadow-sm transition duration-150 ease-in-out hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
                         >
                             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -133,21 +133,21 @@ onMounted(() => {
                         <Link
                             v-if="isStandalone"
                             :href="route('dashboard')"
-                            class="inline-flex w-full max-w-xs items-center justify-center rounded-md border border-transparent bg-gray-800 px-4 py-2 text-sm font-medium text-white shadow-sm transition duration-150 ease-in-out hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
+                            class="inline-flex w-full max-w-xs items-center justify-center rounded-md border border-transparent bg-gray-800 px-5 py-3 text-sm font-medium text-white shadow-sm transition duration-150 ease-in-out hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
                         >
                             Abrir Chanta Puntos
                         </Link>
                         <template v-if="canRegister && !showInstallButton && !isStandalone">
                             <Link
                                 :href="route('register')"
-                                class="inline-flex w-full max-w-xs items-center justify-center rounded-md border border-transparent bg-gray-800 px-4 py-2 text-sm font-medium text-white shadow-sm transition duration-150 ease-in-out hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
+                                class="inline-flex w-full max-w-xs items-center justify-center rounded-md border border-transparent bg-gray-800 px-5 py-3 text-sm font-medium text-white shadow-sm transition duration-150 ease-in-out hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
                             >
                                 Registrarme
                             </Link>
                             <Link
                                 v-if="canLogin"
                                 :href="route('login')"
-                                class="inline-flex w-full max-w-xs items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
+                                class="inline-flex w-full max-w-xs items-center justify-center rounded-md border border-gray-300 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
                             >
                                 Ya tengo cuenta
                             </Link>
@@ -285,28 +285,28 @@ onMounted(() => {
                             v-if="showInstallButton"
                             type="button"
                             @click="requestInstall"
-                            class="inline-flex w-full max-w-xs items-center justify-center gap-2 rounded-md border border-transparent bg-white px-4 py-2 text-sm font-medium text-gray-800 shadow-sm transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-indigo-600 sm:w-auto"
+                            class="inline-flex w-full max-w-xs items-center justify-center gap-2 rounded-md border border-transparent bg-white px-5 py-3 text-sm font-medium text-gray-800 shadow-sm transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-indigo-600 sm:w-auto"
                         >
                             Instalar app
                         </button>
                         <Link
                             v-if="isStandalone"
                             :href="route('dashboard')"
-                            class="inline-flex w-full max-w-xs items-center justify-center rounded-md border border-transparent bg-white px-4 py-2 text-sm font-medium text-gray-800 shadow-sm transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-indigo-600 sm:w-auto"
+                            class="inline-flex w-full max-w-xs items-center justify-center rounded-md border border-transparent bg-white px-5 py-3 text-sm font-medium text-gray-800 shadow-sm transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-indigo-600 sm:w-auto"
                         >
                             Abrir Chanta Puntos
                         </Link>
                         <Link
                             v-if="canRegister"
                             :href="route('register')"
-                            class="inline-flex w-full max-w-xs items-center justify-center rounded-md border border-transparent bg-white px-4 py-2 text-sm font-medium text-gray-800 shadow-sm transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-indigo-600 sm:w-auto"
+                            class="inline-flex w-full max-w-xs items-center justify-center rounded-md border border-transparent bg-white px-5 py-3 text-sm font-medium text-gray-800 shadow-sm transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-indigo-600 sm:w-auto"
                         >
                             Crear cuenta
                         </Link>
                         <Link
                             v-if="canLogin"
                             :href="route('login')"
-                            class="inline-flex w-full max-w-xs items-center justify-center rounded-md border-2 border-white/60 bg-transparent px-4 py-2 text-sm font-medium text-white transition duration-150 ease-in-out hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-indigo-600 sm:w-auto"
+                            class="inline-flex w-full max-w-xs items-center justify-center rounded-md border-2 border-white/60 bg-transparent px-5 py-3 text-sm font-medium text-white transition duration-150 ease-in-out hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-indigo-600 sm:w-auto"
                         >
                             Ya tengo cuenta
                         </Link>

@@ -1,6 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head } from '@inertiajs/vue3';
 
 defineProps({
     message: { type: String, required: true },
@@ -24,12 +24,9 @@ defineProps({
                         <p class="mb-4 text-amber-800">
                             {{ message }}
                         </p>
-                        <Link
-                            :href="route('dashboard')"
-                            class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                        >
-                            Volver al inicio
-                        </Link>
+                        <p class="text-sm text-gray-500">
+                            Podés volver al inicio desde la barra de navegación inferior.
+                        </p>
                     </div>
                 </div>
             </div>

@@ -1,6 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head } from '@inertiajs/vue3';
 
 const props = defineProps({
     transactions: { type: Array, required: true },
@@ -8,13 +8,10 @@ const props = defineProps({
 
 function formatDate(dateStr) {
     const d = new Date(dateStr);
-    return d.toLocaleDateString('es', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-    });
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = String(d.getFullYear()).slice(-2);
+    return `${day}/${month}/${year}`;
 }
 
 function description(t) {
@@ -28,17 +25,9 @@ function description(t) {
 
     <AuthenticatedLayout>
         <template #header>
-            <div class="flex items-center justify-between">
-                <h2 class="text-xl font-semibold leading-tight text-gray-800">
-                    Historial de puntos
-                </h2>
-                <Link
-                    :href="route('dashboard')"
-                    class="text-sm text-indigo-600 hover:text-indigo-800"
-                >
-                    Volver al inicio
-                </Link>
-            </div>
+            <h2 class="text-xl font-semibold leading-tight text-gray-800">
+                Historial de puntos
+            </h2>
         </template>
 
         <div class="py-8">
