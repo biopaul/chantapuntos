@@ -11,6 +11,12 @@ export function isMobileDevice() {
     return mobileMatch || (hasTouch && window.matchMedia('(max-width: 1024px)').matches);
 }
 
+/** Detecta si es iOS (Safari). */
+export function isIOS() {
+    if (typeof navigator === 'undefined') return false;
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
 /** Detecta si la app se ejecuta como PWA instalada (standalone). */
 export function isPWAStandalone() {
     if (typeof window === 'undefined') return false;
@@ -30,17 +36,29 @@ export function isPWAStandalone() {
 export function usePWAInstall() {
     const deferredPrompt = ref(null);
     const showInstallBanner = ref(false);
+    const showFallbackHint = ref(false);
     const isStandalone = ref(false);
 
     function requestInstall() {
-        if (!deferredPrompt.value) return;
-        deferredPrompt.value.prompt();
-        deferredPrompt.value.userChoice.then((result) => {
-            if (result.outcome === 'accepted') {
-                showInstallBanner.value = false;
-            }
-            deferredPrompt.value = null;
-        });
+        if (deferredPrompt.value) {
+            deferredPrompt.value.prompt();
+            deferredPrompt.value.userChoice.then((result) => {
+                if (result.outcome === 'accepted') {
+                    showInstallBanner.value = false;
+                }
+                deferredPrompt.value = null;
+            });
+            showFallbackHint.value = false;
+            return;
+        }
+        showFallbackHint.value = true;
+        setTimeout(() => {
+            showFallbackHint.value = false;
+        }, 8000);
+    }
+
+    function dismissFallbackHint() {
+        showFallbackHint.value = false;
     }
 
     onMounted(() => {
@@ -70,10 +88,17 @@ export function usePWAInstall() {
         }
     });
 
+    const fallbackHintText = isIOS()
+        ? 'En Safari: tocá Compartir y luego «Añadir a pantalla de inicio».'
+        : 'En Chrome: tocá el menú ⋮ y elegí «Instalar app» o «Añadir a pantalla de inicio».';
+
     return {
         deferredPrompt,
         showInstallBanner,
+        showFallbackHint,
+        fallbackHintText,
         isStandalone,
         requestInstall,
+        dismissFallbackHint,
     };
 }

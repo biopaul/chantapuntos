@@ -18,7 +18,14 @@ const props = defineProps({
     },
 });
 
-const { showInstallBanner, isStandalone, requestInstall } = usePWAInstall();
+const {
+    showInstallBanner,
+    showFallbackHint,
+    fallbackHintText,
+    isStandalone,
+    requestInstall,
+    dismissFallbackHint,
+} = usePWAInstall();
 </script>
 
 <template>
@@ -68,17 +75,35 @@ const { showInstallBanner, isStandalone, requestInstall } = usePWAInstall();
                         Puntos y recompensas para las tareas de cada día. Un juego simple para que entiendan el valor de su aporte en el hogar.
                     </p>
                     <div class="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
-                        <button
-                            v-if="showInstallBanner"
-                            type="button"
-                            @click="requestInstall"
-                            class="inline-flex w-full max-w-xs items-center justify-center gap-2 rounded-md border border-transparent bg-gray-800 px-5 py-3 text-sm font-medium text-white shadow-sm transition duration-150 ease-in-out hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
-                        >
-                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                            </svg>
-                            Instalar app
-                        </button>
+                        <div class="flex w-full max-w-xs flex-col items-center gap-2 sm:max-w-none sm:flex-row sm:flex-wrap">
+                            <button
+                                v-if="showInstallBanner"
+                                type="button"
+                                @click="requestInstall"
+                                class="inline-flex w-full max-w-xs items-center justify-center gap-2 rounded-md border border-transparent bg-gray-800 px-5 py-3 text-sm font-medium text-white shadow-sm transition duration-150 ease-in-out hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
+                            >
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                </svg>
+                                Instalar app
+                            </button>
+                            <p
+                                v-if="showFallbackHint"
+                                class="flex w-full max-w-xs items-center justify-between gap-2 rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-800 sm:max-w-md"
+                            >
+                                <span>{{ fallbackHintText }}</span>
+                                <button
+                                    type="button"
+                                    aria-label="Cerrar"
+                                    class="shrink-0 rounded p-1 hover:bg-amber-100"
+                                    @click="dismissFallbackHint"
+                                >
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </p>
+                        </div>
                         <Link
                             v-if="isStandalone"
                             :href="route('dashboard')"
@@ -230,14 +255,32 @@ const { showInstallBanner, isStandalone, requestInstall } = usePWAInstall();
                         Gratis, sin complicaciones. Creá tu cuenta o instalá la app en tu celular.
                     </p>
                     <div class="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
-                        <button
-                            v-if="showInstallBanner"
-                            type="button"
-                            @click="requestInstall"
-                            class="inline-flex w-full max-w-xs items-center justify-center gap-2 rounded-md border border-transparent bg-white px-5 py-3 text-sm font-medium text-gray-800 shadow-sm transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-indigo-600 sm:w-auto"
-                        >
-                            Instalar app
-                        </button>
+                        <div class="flex w-full max-w-xs flex-col gap-2 sm:max-w-none sm:flex-row sm:flex-wrap sm:items-center">
+                            <button
+                                v-if="showInstallBanner"
+                                type="button"
+                                @click="requestInstall"
+                                class="inline-flex w-full max-w-xs items-center justify-center gap-2 rounded-md border border-transparent bg-white px-5 py-3 text-sm font-medium text-gray-800 shadow-sm transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-indigo-600 sm:w-auto"
+                            >
+                                Instalar app
+                            </button>
+                            <p
+                                v-if="showFallbackHint"
+                                class="flex w-full max-w-xs items-center justify-between gap-2 rounded-md bg-white/20 px-3 py-2 text-sm text-white sm:max-w-md"
+                            >
+                                <span>{{ fallbackHintText }}</span>
+                                <button
+                                    type="button"
+                                    aria-label="Cerrar"
+                                    class="shrink-0 rounded p-1 hover:bg-white/20"
+                                    @click="dismissFallbackHint"
+                                >
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </p>
+                        </div>
                         <Link
                             v-if="isStandalone"
                             :href="route('dashboard')"

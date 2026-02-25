@@ -119,7 +119,14 @@ function shareChild(child) {
     sharingChildId.value = null;
 }
 
-const { showInstallBanner, isStandalone, requestInstall } = usePWAInstall();
+const {
+    showInstallBanner,
+    showFallbackHint,
+    fallbackHintText,
+    isStandalone,
+    requestInstall,
+    dismissFallbackHint,
+} = usePWAInstall();
 
 function shareApp() {
     const url = window.location.origin + '/';
@@ -184,14 +191,32 @@ function shareApp() {
                     </div>
                     <div
                         v-if="showInstallBanner && !isStandalone"
-                        class="flex w-full max-w-md items-center justify-between gap-3 rounded-md border border-indigo-200 bg-indigo-50 px-4 py-3"
+                        class="flex w-full max-w-md flex-col gap-2 rounded-md border border-indigo-200 bg-indigo-50 px-4 py-3"
                     >
-                        <span class="text-sm font-medium text-indigo-800">
-                            Instalar Chanta Puntos en tu teléfono
-                        </span>
-                        <PrimaryButton type="button" class="shrink-0" @click="requestInstall">
-                            Instalar
-                        </PrimaryButton>
+                        <div class="flex items-center justify-between gap-3">
+                            <span class="text-sm font-medium text-indigo-800">
+                                Instalar Chanta Puntos en tu teléfono
+                            </span>
+                            <PrimaryButton type="button" class="shrink-0" @click="requestInstall">
+                                Instalar
+                            </PrimaryButton>
+                        </div>
+                        <p
+                            v-if="showFallbackHint"
+                            class="flex items-center justify-between gap-2 rounded bg-amber-100 px-3 py-2 text-sm text-amber-900"
+                        >
+                            <span>{{ fallbackHintText }}</span>
+                            <button
+                                type="button"
+                                aria-label="Cerrar"
+                                class="shrink-0 rounded p-1 hover:bg-amber-200"
+                                @click="dismissFallbackHint"
+                            >
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </p>
                     </div>
                 </div>
 
