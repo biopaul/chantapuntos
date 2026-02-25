@@ -3,10 +3,11 @@ import { defineConfig, loadEnv } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import vue from '@vitejs/plugin-vue';
 
-// Cargar .env para que VITE_BASE_PATH esté disponible en el build
+// En producción (document root = public): assets en /build/assets/
+const isProduction = process.env.NODE_ENV === 'production';
 const env = loadEnv(process.env.NODE_ENV || 'production', process.cwd(), '');
 const basePath = env.VITE_BASE_PATH || process.env.VITE_BASE_PATH;
-const base = basePath ? String(basePath).replace(/\/?$/, '') + '/' : '/';
+const base = isProduction ? '/build/' : (basePath ? String(basePath).replace(/\/?$/, '') + '/' : '/');
 
 let appVersion = '1.0.0';
 try {
