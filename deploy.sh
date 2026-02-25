@@ -8,7 +8,8 @@ echo "==> Entrando en modo mantenimiento..."
 php artisan down --retry=60 || true
 
 echo "==> Actualizando código desde Git..."
-git pull origin Master
+git fetch origin Master
+git reset --hard origin/Master
 
 echo "==> Instalando dependencias PHP..."
 composer install --no-dev --optimize-autoloader --no-interaction
