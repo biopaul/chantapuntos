@@ -22,8 +22,10 @@ export function isPWAStandalone() {
 
 /**
  * Composable para instalación PWA.
- * El banner solo se muestra cuando el navegador dispara beforeinstallprompt.
- * Un clic en "Instalar" abre el diálogo nativo y la app se instala sin pasos extra.
+ * El banner se muestra:
+ * - En móvil: cuando la app no está instalada (no standalone).
+ * - En desktop: cuando el navegador dispara beforeinstallprompt.
+ * Un clic en "Instalar" abre el diálogo nativo (si está disponible) y la app se instala sin pasos extra.
  */
 export function usePWAInstall() {
     const deferredPrompt = ref(null);
@@ -61,6 +63,11 @@ export function usePWAInstall() {
             deferredPrompt.value = e;
             showInstallBanner.value = true;
         });
+
+        const isMobile = isMobileDevice();
+        if (isMobile) {
+            showInstallBanner.value = true;
+        }
     });
 
     return {
