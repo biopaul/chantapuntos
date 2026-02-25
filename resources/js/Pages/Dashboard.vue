@@ -5,7 +5,6 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import Modal from '@/Components/Modal.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import PWAInstallInstructions from '@/Components/PWAInstallInstructions.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import { usePWAInstall } from '@/composables/usePWAInstall';
 import { resizeImageFile } from '@/utils/resizeImage';
@@ -120,13 +119,7 @@ function shareChild(child) {
     sharingChildId.value = null;
 }
 
-const {
-    showInstallBanner,
-    isStandalone,
-    requestInstall,
-    showInstructionsModal,
-    closeInstructions,
-} = usePWAInstall();
+const { showInstallBanner, isStandalone, requestInstall } = usePWAInstall();
 
 function shareApp() {
     const url = window.location.origin + '/';
@@ -501,7 +494,5 @@ function shareApp() {
                 </form>
             </div>
         </Modal>
-
-        <PWAInstallInstructions :show="showInstructionsModal" @close="closeInstructions" />
     </AuthenticatedLayout>
 </template>

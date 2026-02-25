@@ -1,6 +1,5 @@
 <script setup>
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
-import PWAInstallInstructions from '@/Components/PWAInstallInstructions.vue';
 import { usePWAInstall } from '@/composables/usePWAInstall';
 import { Head, Link } from '@inertiajs/vue3';
 
@@ -19,15 +18,7 @@ const props = defineProps({
     },
 });
 
-const {
-    showInstallBanner,
-    isStandalone,
-    isMobile,
-    requestInstall,
-    dismissBanner,
-    showInstructionsModal,
-    closeInstructions,
-} = usePWAInstall();
+const { showInstallBanner, isStandalone, requestInstall } = usePWAInstall();
 </script>
 
 <template>
@@ -294,7 +285,5 @@ const {
                 </nav>
             </div>
         </footer>
-
-        <PWAInstallInstructions :show="showInstructionsModal" @close="closeInstructions" />
     </div>
 </template>

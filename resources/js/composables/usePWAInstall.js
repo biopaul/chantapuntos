@@ -22,47 +22,27 @@ export function isPWAStandalone() {
 
 /**
  * Composable para instalación PWA.
- * En móvil: muestra el banner de instalar siempre que no sea standalone (aunque el navegador
- * no dispare beforeinstallprompt). Si no hay prompt nativo, al tocar "Instalar" se muestran
- * instrucciones (menú Chrome / Añadir a pantalla de inicio en iOS).
+ * El banner solo se muestra cuando el navegador dispara beforeinstallprompt.
+ * Un clic en "Instalar" abre el diálogo nativo y la app se instala sin pasos extra.
  */
 export function usePWAInstall() {
     const deferredPrompt = ref(null);
     const showInstallBanner = ref(false);
-    const showInstructionsModal = ref(false);
     const isStandalone = ref(false);
-    const isMobile = ref(false);
-
-    function dismissBanner() {
-        showInstallBanner.value = false;
-        try {
-            localStorage.setItem(INSTALL_DISMISSED_KEY, '1');
-        } catch (_) {}
-    }
 
     function requestInstall() {
-        if (deferredPrompt.value) {
-            deferredPrompt.value.prompt();
-            deferredPrompt.value.userChoice.then((result) => {
-                if (result.outcome === 'accepted') {
-                    showInstallBanner.value = false;
-                }
-                deferredPrompt.value = null;
-            });
-            return;
-        }
-        if (isMobile.value) {
-            showInstructionsModal.value = true;
-        }
-    }
-
-    function closeInstructions() {
-        showInstructionsModal.value = false;
+        if (!deferredPrompt.value) return;
+        deferredPrompt.value.prompt();
+        deferredPrompt.value.userChoice.then((result) => {
+            if (result.outcome === 'accepted') {
+                showInstallBanner.value = false;
+            }
+            deferredPrompt.value = null;
+        });
     }
 
     onMounted(() => {
         isStandalone.value = isPWAStandalone();
-        isMobile.value = isMobileDevice();
 
         if (isStandalone.value) {
             showInstallBanner.value = false;
@@ -71,10 +51,8 @@ export function usePWAInstall() {
 
         try {
             if (localStorage.getItem(INSTALL_DISMISSED_KEY)) {
-                if (!isMobile.value) {
-                    showInstallBanner.value = false;
-                    return;
-                }
+                showInstallBanner.value = false;
+                return;
             }
         } catch (_) {}
 
@@ -83,20 +61,12 @@ export function usePWAInstall() {
             deferredPrompt.value = e;
             showInstallBanner.value = true;
         });
-
-        if (isMobile.value) {
-            showInstallBanner.value = true;
-        }
     });
 
     return {
         deferredPrompt,
         showInstallBanner,
-        showInstructionsModal,
         isStandalone,
-        isMobile,
         requestInstall,
-        dismissBanner,
-        closeInstructions,
     };
 }
