@@ -1,9 +1,20 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import Skeleton from '@/Components/Skeleton.vue';
 import { Head } from '@inertiajs/vue3';
+import { onMounted, ref } from 'vue';
 
 const props = defineProps({
     transactions: { type: Array, required: true },
+});
+
+const showContent = ref(false);
+onMounted(() => {
+    requestAnimationFrame(() => {
+        setTimeout(() => {
+            showContent.value = true;
+        }, 220);
+    });
 });
 
 function formatDate(dateStr) {
@@ -56,7 +67,15 @@ function description(t) {
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-gray-200">
-                                    <tr v-for="t in transactions" :key="t.id">
+                                    <template v-if="!showContent">
+                                        <tr v-for="n in 8" :key="'sk-' + n" class="divide-y divide-gray-200">
+                                            <td class="px-4 py-3"><Skeleton variant="line" class="w-20" /></td>
+                                            <td class="px-4 py-3"><Skeleton variant="line" class="w-24" /></td>
+                                            <td class="px-4 py-3"><Skeleton variant="line" class="w-32" /></td>
+                                            <td class="px-4 py-3 text-right"><Skeleton variant="line" class="ml-auto w-12" /></td>
+                                        </tr>
+                                    </template>
+                                    <tr v-else v-for="t in transactions" :key="t.id">
                                         <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-500">
                                             {{ formatDate(t.created_at) }}
                                         </td>

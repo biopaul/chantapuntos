@@ -745,7 +745,13 @@ function toggleFaq(index) {
         <footer class="border-t border-gray-200 bg-white px-4 py-8">
             <div class="mx-auto flex max-w-4xl flex-col items-center justify-between gap-4 sm:flex-row">
                 <span class="text-base text-gray-500">Chanta Puntos — Puntos y recompensas para la familia</span>
-                <nav v-if="canLogin" class="flex gap-6">
+                <nav v-if="canLogin" class="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
+                    <Link
+                        :href="route('privacy')"
+                        class="text-base font-medium text-gray-600 hover:text-amber-600"
+                    >
+                        Política de Privacidad
+                    </Link>
                     <Link
                         :href="route('login')"
                         class="text-base font-medium text-gray-600 hover:text-indigo-600"

@@ -5,11 +5,21 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import Modal from '@/Components/Modal.vue';
+import Skeleton from '@/Components/Skeleton.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 const props = defineProps({
     actions: { type: Array, required: true },
+});
+
+const showContent = ref(false);
+onMounted(() => {
+    requestAnimationFrame(() => {
+        setTimeout(() => {
+            showContent.value = true;
+        }, 220);
+    });
 });
 
 const showCreateModal = ref(false);
@@ -103,7 +113,14 @@ function isCustom(action) {
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-gray-200">
-                                    <tr v-for="action in actions" :key="action.id">
+                                    <template v-if="!showContent">
+                                        <tr v-for="n in 8" :key="'sk-' + n">
+                                            <td class="px-4 py-3"><Skeleton variant="line" class="w-48" /></td>
+                                            <td class="px-4 py-3"><Skeleton variant="line" class="w-12" /></td>
+                                            <td class="px-4 py-3 text-right"><Skeleton variant="line" class="ml-auto w-10" /></td>
+                                        </tr>
+                                    </template>
+                                    <tr v-else v-for="action in actions" :key="action.id">
                                         <td class="min-w-0 max-w-[70%] px-4 py-3 text-sm text-gray-900">
                                             <div class="flex flex-wrap items-center gap-2">
                                                 <span class="min-w-0 break-words">{{ action.name }}</span>

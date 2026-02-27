@@ -34,6 +34,13 @@ Route::get('/', function () {
     ]);
 });
 
+Route::get('/politica-de-privacidad', function () {
+    return Inertia::render('PrivacyPolicy', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+    ]);
+})->name('privacy');
+
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
     Route::get('/onboarding', [ChildController::class, 'index'])->name('onboarding');
@@ -58,6 +65,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/profile/export', [ProfileController::class, 'export'])->name('profile.export');
 });
 
 require __DIR__.'/auth.php';

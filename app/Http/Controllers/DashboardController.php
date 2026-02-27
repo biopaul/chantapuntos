@@ -6,6 +6,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\ChildController;
 use App\Models\Action;
+use App\Models\Child;
+use App\Models\PointTransaction;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -17,7 +19,13 @@ class DashboardController extends Controller
     public function __invoke(Request $request): Response|RedirectResponse
     {
         $user = $request->user();
-        $children = $user->childrenAccessible();
+        $children = Child::accessibleBy($user)
+            ->orderBy('created_at')
+            ->withSum(
+                ['pointTransactions as total_points_earned' => fn ($q) => $q->where('type', PointTransaction::TYPE_TASK)],
+                'points'
+            )
+            ->get();
 
         if ($children->isEmpty()) {
             return redirect()->route('onboarding');

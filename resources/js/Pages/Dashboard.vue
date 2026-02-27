@@ -6,10 +6,11 @@ import InputLabel from '@/Components/InputLabel.vue';
 import Modal from '@/Components/Modal.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
+import Skeleton from '@/Components/Skeleton.vue';
 import { usePWAInstall } from '@/composables/usePWAInstall';
 import { resizeImageFile } from '@/utils/resizeImage';
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 const props = defineProps({
     children: { type: Array, required: true },
@@ -108,6 +109,15 @@ function submitEditChild() {
         },
     });
 }
+
+const showContent = ref(false);
+onMounted(() => {
+    requestAnimationFrame(() => {
+        setTimeout(() => {
+            showContent.value = true;
+        }, 220);
+    });
+});
 
 const sharingChildId = ref(null);
 function shareChild(child) {
@@ -226,7 +236,23 @@ function shareApp() {
                             Puntos por hijo
                         </h3>
                         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                            <template v-if="!showContent">
+                                <div
+                                    v-for="n in 6"
+                                    :key="'skeleton-' + n"
+                                    class="flex items-center gap-4 rounded-xl border border-gray-200 bg-gray-50 p-4"
+                                >
+                                    <Skeleton variant="circle" class="h-14 w-14 shrink-0" />
+                                    <div class="min-w-0 flex-1 space-y-2">
+                                        <Skeleton variant="line" class="w-24" />
+                                        <Skeleton variant="line" class="w-16" />
+                                        <Skeleton variant="line" class="w-28" />
+                                    </div>
+                                    <Skeleton variant="circle" class="h-10 w-10 shrink-0" />
+                                </div>
+                            </template>
                             <div
+                                v-else
                                 v-for="child in children"
                                 :key="child.id"
                                 class="flex items-center gap-4 rounded-xl border border-gray-200 bg-gray-50 p-4"
@@ -276,6 +302,9 @@ function shareApp() {
                                         :class="child.points >= 0 ? 'text-indigo-600' : 'text-red-600'"
                                     >
                                         {{ child.points }} pts
+                                    </p>
+                                    <p class="text-xs text-gray-500">
+                                        Total pts ganados: {{ child.total_points_earned ?? 0 }}
                                     </p>
                                 </div>
                                 <button

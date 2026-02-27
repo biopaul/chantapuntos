@@ -16,7 +16,7 @@ import { Head, Link } from '@inertiajs/vue3';
                     <p class="mt-1 text-sm text-gray-600">
                         Administrá hijos, tareas y otras opciones de la app.
                     </p>
-                    <div class="mt-6 flex max-w-xl flex-col gap-3 sm:flex-row">
+                    <div class="mt-6 flex max-w-xl flex-col gap-3 sm:flex-row sm:flex-wrap">
                         <Link
                             :href="route('onboarding')"
                             class="flex flex-1 items-center justify-center gap-2 rounded-md border border-gray-300 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
@@ -30,6 +30,13 @@ import { Head, Link } from '@inertiajs/vue3';
                         >
                             <span aria-hidden="true">📋</span>
                             Tareas
+                        </Link>
+                        <Link
+                            :href="route('profile.edit')"
+                            class="flex flex-1 items-center justify-center gap-2 rounded-md border border-gray-300 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                        >
+                            <span aria-hidden="true">👤</span>
+                            Perfil y eliminación de cuenta
                         </Link>
                     </div>
                 </div>

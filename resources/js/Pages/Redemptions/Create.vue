@@ -4,11 +4,21 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
+import Skeleton from '@/Components/Skeleton.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
 const props = defineProps({
     children: { type: Array, required: true },
+});
+
+const showContent = ref(false);
+onMounted(() => {
+    requestAnimationFrame(() => {
+        setTimeout(() => {
+            showContent.value = true;
+        }, 220);
+    });
 });
 
 const form = useForm({
@@ -40,6 +50,21 @@ const hasChildrenWithPoints = computed(() => props.children.length > 0);
             <div class="mx-auto max-w-xl sm:px-6 lg:px-8">
                 <div class="overflow-hidden bg-white shadow-sm sm:rounded-xl">
                     <div class="p-6">
+                        <template v-if="!showContent">
+                            <div class="mb-6 flex justify-center" aria-hidden="true">
+                                <Skeleton variant="circle" class="h-16 w-16" />
+                            </div>
+                            <div class="mb-6 space-y-2">
+                                <Skeleton variant="line" class="w-full" />
+                                <Skeleton variant="line" class="w-11/12" />
+                            </div>
+                            <div class="space-y-4">
+                                <Skeleton variant="line" class="h-10 w-full" />
+                                <Skeleton variant="line" class="h-10 w-full" />
+                                <Skeleton variant="line" class="h-10 w-32" />
+                            </div>
+                        </template>
+                        <template v-else>
                         <div class="mb-6 flex justify-center" aria-hidden="true">
                             <span class="text-7xl">💰</span>
                         </div>
@@ -120,6 +145,7 @@ const hasChildrenWithPoints = computed(() => props.children.length > 0);
                                 </Link>
                             </div>
                         </form>
+                        </template>
                     </div>
                 </div>
             </div>

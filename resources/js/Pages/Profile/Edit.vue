@@ -40,6 +40,28 @@ defineProps({
                 <div
                     class="bg-white p-4 shadow sm:rounded-lg sm:p-8"
                 >
+                    <section class="max-w-xl space-y-4">
+                        <header>
+                            <h2 class="text-lg font-medium text-gray-900">
+                                Descargar mis datos
+                            </h2>
+                            <p class="mt-1 text-sm text-gray-600">
+                                Podés descargar una copia de tus datos (cuenta, hijos, tareas y movimientos de puntos) en formato JSON antes de eliminar la cuenta.
+                            </p>
+                        </header>
+                        <button
+                            type="button"
+                            class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                            @click="window.location.href = route('profile.export')"
+                        >
+                            Descargar datos (JSON)
+                        </button>
+                    </section>
+                </div>
+
+                <div
+                    class="bg-white p-4 shadow sm:rounded-lg sm:p-8"
+                >
                     <DeleteUserForm class="max-w-xl" />
                 </div>
             </div>

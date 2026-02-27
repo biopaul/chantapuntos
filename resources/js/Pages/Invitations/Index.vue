@@ -4,12 +4,22 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
+import Skeleton from '@/Components/Skeleton.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { usePage } from '@inertiajs/vue3';
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
 defineProps({
     invitations: { type: Array, required: true },
+});
+
+const showContent = ref(false);
+onMounted(() => {
+    requestAnimationFrame(() => {
+        setTimeout(() => {
+            showContent.value = true;
+        }, 220);
+    });
 });
 
 const page = usePage();
@@ -61,6 +71,18 @@ function openWhatsApp() {
 
                 <div class="overflow-hidden bg-white shadow-sm sm:rounded-xl">
                     <div class="p-6">
+                        <template v-if="!showContent">
+                            <div class="mb-4 space-y-2">
+                                <Skeleton variant="line" class="w-full" />
+                                <Skeleton variant="line" class="w-3/4" />
+                            </div>
+                            <div class="space-y-4">
+                                <Skeleton variant="line" class="h-10 w-full" />
+                                <Skeleton variant="line" class="h-10 w-full" />
+                                <Skeleton variant="line" class="h-10 w-40" />
+                            </div>
+                        </template>
+                        <template v-else>
                         <p class="mb-4 text-gray-600">
                             Elegí cómo querés invitar al otro padre e ingresá su correo (para identificarlo al aceptar).
                         </p>
@@ -138,6 +160,7 @@ function openWhatsApp() {
                                 Al abrir el enlace, la otra persona podrá iniciar sesión o registrarse con el correo que ingresaste y aceptar la invitación.
                             </p>
                         </div>
+                        </template>
                     </div>
                 </div>
 

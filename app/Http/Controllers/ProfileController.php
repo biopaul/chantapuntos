@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\PointTransaction;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -59,5 +62,60 @@ class ProfileController extends Controller
         $request->session()->regenerateToken();
 
         return Redirect::to('/');
+    }
+
+    /**
+     * Export all user data as JSON (data portability / download before delete).
+     */
+    public function export(Request $request): \Illuminate\Http\Response
+    {
+        $user = $request->user();
+
+        $children = $user->childrenAccessible()->orderBy('created_at')->get();
+        $childIds = $children->pluck('id')->all();
+
+        $customActions = $user->actions()->orderBy('created_at')->get();
+
+        $transactions = PointTransaction::query()
+            ->whereIn('child_id', $childIds)
+            ->with(['child:id,name,points', 'action:id,name,points,user_id'])
+            ->orderBy('created_at')
+            ->get();
+
+        $export = [
+            'exportado_en' => now()->toIso8601String(),
+            'app' => 'Chanta Puntos',
+            'cuenta' => [
+                'nombre' => $user->name,
+                'email' => $user->email,
+                'fecha_registro' => $user->created_at?->toIso8601String(),
+            ],
+            'hijos' => $children->map(fn ($c) => [
+                'nombre' => $c->name,
+                'icono' => $c->icon,
+                'puntos_actuales' => $c->points,
+                'fecha_creacion' => $c->created_at?->toIso8601String(),
+            ])->values()->all(),
+            'tareas_personalizadas' => $customActions->map(fn ($a) => [
+                'nombre' => $a->name,
+                'puntos' => $a->points,
+                'fecha_creacion' => $a->created_at?->toIso8601String(),
+            ])->values()->all(),
+            'movimientos_de_puntos' => $transactions->map(fn ($t) => [
+                'fecha' => $t->created_at?->toIso8601String(),
+                'hijo' => $t->child?->name,
+                'tarea_o_concepto' => $t->action?->name ?? $t->description,
+                'puntos' => $t->points,
+                'tipo' => $t->type,
+                'descripcion' => $t->description,
+            ])->values()->all(),
+        ];
+
+        $json = json_encode($export, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+
+        return response($json, 200, [
+            'Content-Type' => 'application/json',
+            'Content-Disposition' => 'attachment; filename="chantapuntos-datos-' . $user->id . '-' . now()->format('Y-m-d') . '.json"',
+        ]);
     }
 }

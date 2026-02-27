@@ -6,14 +6,24 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import ChildIcon from '@/Components/ChildIcon.vue';
 import Modal from '@/Components/Modal.vue';
+import Skeleton from '@/Components/Skeleton.vue';
 import { resizeImageFile } from '@/utils/resizeImage';
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 const props = defineProps({
     children: { type: Array, required: true },
     canAddChild: { type: Boolean, default: true },
     availableIcons: { type: Array, required: true },
+});
+
+const showContent = ref(false);
+onMounted(() => {
+    requestAnimationFrame(() => {
+        setTimeout(() => {
+            showContent.value = true;
+        }, 220);
+    });
 });
 
 const form = useForm({
@@ -140,6 +150,30 @@ function submitEdit() {
             <div class="mx-auto max-w-2xl sm:px-6 lg:px-8">
                 <div class="overflow-hidden bg-white shadow-sm sm:rounded-xl">
                     <div class="p-6">
+                        <template v-if="!showContent">
+                            <div class="mb-6 space-y-2">
+                                <Skeleton variant="line" class="w-full" />
+                                <Skeleton variant="line" class="w-5/6" />
+                            </div>
+                            <div class="mb-8 space-y-2">
+                                <Skeleton variant="line" class="mb-3 h-4 w-24" />
+                                <div
+                                    v-for="n in 3"
+                                    :key="'sk-' + n"
+                                    class="flex items-center justify-between gap-3 rounded-lg border border-gray-200 bg-gray-50 px-4 py-3"
+                                >
+                                    <Skeleton variant="circle" class="h-10 w-10" />
+                                    <Skeleton variant="line" class="h-5 w-28" />
+                                    <Skeleton variant="line" class="h-9 w-20" />
+                                </div>
+                            </div>
+                            <div class="space-y-4">
+                                <Skeleton variant="line" class="h-10 w-full" />
+                                <Skeleton variant="line" class="h-10 w-full" />
+                                <Skeleton variant="line" class="h-10 w-32" />
+                            </div>
+                        </template>
+                        <template v-else>
                         <p class="mb-6 text-gray-600">
                             Elige un nombre, un ícono o sube una foto para cada hijo.
                         </p>
@@ -266,6 +300,7 @@ function submitEdit() {
                                 </Link>
                             </div>
                         </form>
+                        </template>
                     </div>
                 </div>
             </div>
