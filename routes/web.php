@@ -29,6 +29,7 @@ Route::get('/', function () {
             'dashboard' => asset('images/landing/mockup-dashboard.png'),
             'tareas' => asset('images/landing/mockup-tareas.png'),
             'recompensas' => asset('images/landing/mockup-recompensas.png'),
+            'mascota' => asset('images/landing/mascota-llama.png'),
         ],
     ]);
 });
