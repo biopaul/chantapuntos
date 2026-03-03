@@ -53,12 +53,12 @@ function isActive(...names) {
                 </div>
             </header>
 
-            <!-- Espacio para la cabecera fija -->
-            <div class="pt-14">
-                <!-- Flash message -->
+            <!-- Espacio para la cabecera fija + gap (misma pauta que Configuración) -->
+            <div class="pt-16">
+                <!-- Flash message: margen superior para que no quede pegado a la cabecera -->
                 <div
                     v-if="page.props.flash?.message"
-                    class="bg-indigo-600 px-4 py-2 text-center text-sm text-white"
+                    class="mt-2 bg-indigo-600 px-4 py-2 text-center text-sm text-white"
                 >
                     {{ page.props.flash.message }}
                 </div>
@@ -66,15 +66,15 @@ function isActive(...names) {
                 <!-- Page Heading (título específico de la página, opcional) -->
                 <header
                     v-if="$slots.header"
-                    class="bg-white shadow-sm"
+                    class="mt-2 bg-white shadow-sm"
                 >
                     <div class="mx-auto max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
                         <slot name="header" />
                     </div>
                 </header>
 
-                <!-- Page Content -->
-                <main class="pb-20">
+                <!-- Page Content: gap bajo cabecera de página + padding horizontal unificado -->
+                <main class="pt-6 pb-20 px-4 sm:px-6 lg:px-8">
                     <slot />
                 </main>
             </div>

@@ -61,7 +61,7 @@ function openWhatsApp() {
         </template>
 
         <div class="py-6">
-            <div class="mx-auto max-w-2xl sm:px-6 lg:px-8">
+            <div class="mx-auto max-w-2xl">
                 <p v-if="page.props.flash?.message" class="mb-4 rounded-lg bg-green-50 p-3 text-sm text-green-800">
                     {{ page.props.flash.message }}
                 </p>

@@ -90,8 +90,8 @@ function isCustom(action) {
             </div>
         </template>
 
-        <div class="py-8">
-            <div class="mx-auto max-w-4xl sm:px-6 lg:px-8">
+        <div class="py-6">
+            <div class="mx-auto max-w-4xl">
                 <div class="overflow-hidden bg-white shadow-sm sm:rounded-xl">
                     <div class="p-6">
                         <p class="mb-4 text-gray-600">

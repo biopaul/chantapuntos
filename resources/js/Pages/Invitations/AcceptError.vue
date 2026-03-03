@@ -18,7 +18,7 @@ defineProps({
         </template>
 
         <div class="py-6">
-            <div class="mx-auto max-w-2xl sm:px-6 lg:px-8">
+            <div class="mx-auto max-w-2xl">
                 <div class="overflow-hidden bg-white shadow-sm sm:rounded-xl">
                     <div class="p-6">
                         <p class="mb-4 text-amber-800">

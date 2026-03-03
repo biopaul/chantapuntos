@@ -164,7 +164,7 @@ function shareApp() {
             </div>
         </template>
 
-        <div class="py-6 px-4 sm:px-6 lg:px-8">
+        <div class="py-6">
             <div class="mx-auto max-w-4xl">
                 <div class="mb-6 flex flex-col items-center gap-3">
                     <button

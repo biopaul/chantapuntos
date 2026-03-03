@@ -39,4 +39,17 @@ class Invitation extends Model
     {
         return $this->accepted_at !== null;
     }
+
+    /**
+     * Aplica esta invitación al usuario: vincula los hijos del inviter y marca la invitación como aceptada.
+     * Solo debe llamarse si la invitación es válida (no aceptada, no expirada, email coincide).
+     */
+    public function acceptFor(User $user): void
+    {
+        $childIds = $this->inviter->children()->pluck('id');
+        foreach ($childIds as $childId) {
+            $user->sharedChildren()->syncWithoutDetaching([$childId]);
+        }
+        $this->update(['accepted_at' => now()]);
+    }
 }

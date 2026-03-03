@@ -18,7 +18,7 @@ class ChildCardController extends Controller
         $child = Child::where('share_token', $token)->firstOrFail();
 
         $child->loadSum(
-            ['pointTransactions as total_points_earned' => fn ($q) => $q->where('type', PointTransaction::TYPE_TASK)],
+            ['pointTransactions as total_points_earned' => fn ($q) => $q->where('type', PointTransaction::TYPE_TASK)->where('points', '>', 0)],
             'points'
         );
 

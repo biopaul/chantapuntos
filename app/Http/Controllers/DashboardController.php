@@ -22,7 +22,7 @@ class DashboardController extends Controller
         $children = Child::accessibleBy($user)
             ->orderBy('created_at')
             ->withSum(
-                ['pointTransactions as total_points_earned' => fn ($q) => $q->where('type', PointTransaction::TYPE_TASK)],
+                ['pointTransactions as total_points_earned' => fn ($q) => $q->where('type', PointTransaction::TYPE_TASK)->where('points', '>', 0)],
                 'points'
             )
             ->get();

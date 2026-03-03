@@ -127,14 +127,7 @@ class InvitationController extends Controller
             return redirect()->route('login')->with('url.intended', route('invitations.accept', ['token' => $token]));
         }
 
-        $inviter = $invitation->inviter;
-        $childIds = $inviter->children()->pluck('id');
-
-        foreach ($childIds as $childId) {
-            $user->sharedChildren()->syncWithoutDetaching([$childId]);
-        }
-
-        $invitation->update(['accepted_at' => now()]);
+        $invitation->acceptFor($user);
 
         return redirect()->route('dashboard')->with('message', 'Invitación aceptada. Ya puedes ver y gestionar los hijos.');
     }

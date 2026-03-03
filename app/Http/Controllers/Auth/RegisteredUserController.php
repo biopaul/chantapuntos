@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Invitation;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -46,6 +47,17 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        // Si este correo tiene una invitación pendiente, aplicarla de inmediato (solo quien se registra con ese correo obtiene el acceso).
+        $pendingInvitation = Invitation::where('email', $user->email)
+            ->whereNull('accepted_at')
+            ->where('expires_at', '>', now())
+            ->first();
+        if ($pendingInvitation) {
+            $pendingInvitation->acceptFor($user);
+            return redirect()->intended(route('dashboard'))
+                ->with('message', 'Cuenta creada. Ya podés ver y gestionar los hijos que te compartieron.');
+        }
+
+        return redirect()->intended(route('dashboard'));
     }
 }

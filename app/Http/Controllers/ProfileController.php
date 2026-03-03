@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\Child;
 use App\Models\PointTransaction;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
@@ -71,7 +72,10 @@ class ProfileController extends Controller
     {
         $user = $request->user();
 
-        $children = $user->childrenAccessible()->orderBy('created_at')->get();
+        $children = Child::query()
+            ->accessibleBy($user)
+            ->orderBy('created_at')
+            ->get();
         $childIds = $children->pluck('id')->all();
 
         $customActions = $user->actions()->orderBy('created_at')->get();
@@ -112,6 +116,9 @@ class ProfileController extends Controller
         ];
 
         $json = json_encode($export, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        if ($json === false) {
+            abort(500, 'No se pudo exportar los datos.');
+        }
 
         return response($json, 200, [
             'Content-Type' => 'application/json',
