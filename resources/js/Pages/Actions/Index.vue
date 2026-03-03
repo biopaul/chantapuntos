@@ -76,16 +76,16 @@ function isCustom(action) {
 </script>
 
 <template>
-    <Head title="Acciones" />
+    <Head title="Tareas" />
 
     <AuthenticatedLayout>
         <template #header>
             <div class="flex items-center justify-between">
                 <h2 class="text-xl font-semibold leading-tight text-gray-800">
-                    Acciones
+                    Tareas
                 </h2>
                 <PrimaryButton @click="openCreate">
-                    Nueva acción
+                    Nueva tarea
                 </PrimaryButton>
             </div>
         </template>
@@ -95,7 +95,7 @@ function isCustom(action) {
                 <div class="overflow-hidden bg-white shadow-sm sm:rounded-xl">
                     <div class="p-6">
                         <p class="mb-4 text-gray-600">
-                            Acciones precargadas y las que añadas. Edita nombre y puntaje (-10 a 10). Las de puntaje positivo suman puntos; las negativas restan.
+                            Tareas precargadas y las que añadas. Editá nombre y puntaje (-10 a 10). Las de puntaje positivo suman puntos; las negativas restan.
                         </p>
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200">
@@ -108,7 +108,7 @@ function isCustom(action) {
                                             Puntaje
                                         </th>
                                         <th class="px-4 py-3 text-right text-xs font-medium uppercase text-gray-500">
-                                            Acciones
+                                            Opciones
                                         </th>
                                     </tr>
                                 </thead>
@@ -186,7 +186,7 @@ function isCustom(action) {
 
         <Modal :show="showCreateModal" @close="showCreateModal = false">
             <div class="p-6">
-                <h3 class="text-lg font-medium text-gray-900">Nueva acción</h3>
+                <h3 class="text-lg font-medium text-gray-900">Nueva tarea</h3>
                 <form @submit.prevent="submitCreate" class="mt-4 space-y-4">
                     <div>
                         <InputLabel for="create-name" value="Nombre" />
@@ -226,7 +226,7 @@ function isCustom(action) {
 
         <Modal :show="showEditModal" @close="showEditModal = false">
             <div class="p-6">
-                <h3 class="text-lg font-medium text-gray-900">Editar acción</h3>
+                <h3 class="text-lg font-medium text-gray-900">Editar tarea</h3>
                 <form @submit.prevent="submitEdit" class="mt-4 space-y-4">
                     <div>
                         <InputLabel for="edit-name" value="Nombre" />

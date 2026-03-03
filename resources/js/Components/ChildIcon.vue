@@ -28,6 +28,7 @@ const sizeClasses = {
     sm: 'w-8 h-8 text-xl',
     md: 'w-12 h-12 text-2xl',
     lg: 'w-16 h-16 text-3xl',
+    xl: 'w-20 h-20 text-4xl',
 };
 
 const displayIcon = iconEmoji[props.icon] ?? '⭐';

@@ -10,6 +10,7 @@ import { computed, onMounted, ref } from 'vue';
 
 const props = defineProps({
     children: { type: Array, required: true },
+    canjeImageUrl: { type: String, required: true },
 });
 
 const showContent = ref(false);
@@ -52,7 +53,7 @@ const hasChildrenWithPoints = computed(() => props.children.length > 0);
                     <div class="p-6">
                         <template v-if="!showContent">
                             <div class="mb-6 flex justify-center" aria-hidden="true">
-                                <Skeleton variant="circle" class="h-16 w-16" />
+                                <Skeleton variant="rect" class="h-[400px] w-48" />
                             </div>
                             <div class="mb-6 space-y-2">
                                 <Skeleton variant="line" class="w-full" />
@@ -66,7 +67,11 @@ const hasChildrenWithPoints = computed(() => props.children.length > 0);
                         </template>
                         <template v-else>
                         <div class="mb-6 flex justify-center" aria-hidden="true">
-                            <span class="text-7xl">💰</span>
+                            <img
+                                :src="canjeImageUrl"
+                                alt="Canje de puntos"
+                                class="h-[400px] w-auto object-contain"
+                            />
                         </div>
                         <p class="mb-6 text-gray-600">
                             Elige el hijo, describe el canje (ej. "Llevar a Isabella al cumpleaños de Juanita") y los puntos a restar.

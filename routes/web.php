@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ActionController;
+use App\Http\Controllers\AchievementsController;
 use App\Http\Controllers\ChildCardController;
 use App\Http\Controllers\ChildController;
 use App\Http\Controllers\DashboardController;
@@ -59,6 +60,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/invitations', [InvitationController::class, 'index'])->name('invitations.index');
     Route::post('/invitations', [InvitationController::class, 'store'])->name('invitations.store');
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
+    Route::get('/achievements', AchievementsController::class)->name('achievements.index');
 });
 
 Route::middleware('auth')->group(function () {

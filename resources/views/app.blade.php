@@ -4,6 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#e8e8e8">
+        <meta name="asset-url" content="{{ asset('') }}">
         <link rel="manifest" href="{{ asset('manifest.json') }}">
 
         <title inertia>{{ config('app.name', 'Laravel') }}</title>

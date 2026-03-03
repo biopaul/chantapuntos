@@ -9,6 +9,14 @@ import SecondaryButton from '@/Components/SecondaryButton.vue';
 import Skeleton from '@/Components/Skeleton.vue';
 import { usePWAInstall } from '@/composables/usePWAInstall';
 import { resizeImageFile } from '@/utils/resizeImage';
+import {
+    getCurrentAchievement,
+    getNextAchievement,
+    getProgressPercent,
+    getPointsToNext,
+    getDisplayName,
+    STAGE_COLORS,
+} from '@/utils/achievements';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { onMounted, ref } from 'vue';
 
@@ -230,101 +238,129 @@ function shareApp() {
                     </div>
                 </div>
 
-                <div class="overflow-hidden bg-white shadow-sm sm:rounded-xl">
-                    <div class="p-6">
-                        <h3 class="mb-4 text-sm font-medium text-gray-700">
-                            Puntos por hijo
-                        </h3>
-                        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                            <template v-if="!showContent">
-                                <div
-                                    v-for="n in 6"
-                                    :key="'skeleton-' + n"
-                                    class="flex items-center gap-4 rounded-xl border border-gray-200 bg-gray-50 p-4"
-                                >
-                                    <Skeleton variant="circle" class="h-14 w-14 shrink-0" />
-                                    <div class="min-w-0 flex-1 space-y-2">
-                                        <Skeleton variant="line" class="w-24" />
-                                        <Skeleton variant="line" class="w-16" />
-                                        <Skeleton variant="line" class="w-28" />
-                                    </div>
-                                    <Skeleton variant="circle" class="h-10 w-10 shrink-0" />
-                                </div>
-                            </template>
-                            <div
-                                v-else
-                                v-for="child in children"
-                                :key="child.id"
-                                class="flex items-center gap-4 rounded-xl border border-gray-200 bg-gray-50 p-4"
-                            >
-                                <button
-                                    v-if="child.is_owner"
-                                    type="button"
-                                    class="flex shrink-0 cursor-pointer rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                                    :aria-label="'Editar ' + child.name"
-                                    @click="openEditChild(child)"
-                                >
-                                    <ChildIcon
-                                        :icon="child.icon"
-                                        :avatar-url="child.avatar_url"
-                                        size="lg"
-                                    />
-                                </button>
-                                <div
-                                    v-else
-                                    class="flex shrink-0"
-                                >
-                                    <ChildIcon
-                                        :icon="child.icon"
-                                        :avatar-url="child.avatar_url"
-                                        size="lg"
-                                    />
-                                </div>
-                                <div class="min-w-0 flex-1">
-                                    <button
-                                        v-if="child.is_owner"
-                                        type="button"
-                                        class="cursor-pointer text-left focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 rounded"
-                                        @click="openEditChild(child)"
-                                    >
-                                        <p class="truncate font-medium text-gray-900 hover:text-indigo-600">
-                                            {{ child.name }}
-                                        </p>
-                                    </button>
-                                    <p
-                                        v-else
-                                        class="truncate font-medium text-gray-900"
-                                    >
-                                        {{ child.name }}
-                                    </p>
-                                    <p
-                                        class="text-2xl font-bold"
-                                        :class="child.points >= 0 ? 'text-indigo-600' : 'text-red-600'"
-                                    >
-                                        {{ child.points }} pts
-                                    </p>
-                                    <p class="text-xs text-gray-500">
-                                        Total pts ganados: {{ child.total_points_earned ?? 0 }}
-                                    </p>
-                                </div>
-                                <button
-                                    type="button"
-                                    class="flex shrink-0 rounded p-2 text-green-600 transition hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-green-500"
-                                    title="Compartir ficha por WhatsApp"
-                                    aria-label="Compartir por WhatsApp"
-                                    :disabled="sharingChildId === child.id"
-                                    @click="shareChild(child)"
-                                >
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                                    </svg>
-                                </button>
+                <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    <template v-if="!showContent">
+                        <div
+                            v-for="n in 6"
+                            :key="'skeleton-' + n"
+                            class="flex items-center gap-4 rounded-2xl bg-white p-4 shadow-md"
+                        >
+                            <Skeleton variant="circle" class="h-20 w-20 shrink-0" />
+                            <div class="min-w-0 flex-1 space-y-2">
+                                <Skeleton variant="line" class="w-28 h-5" />
+                                <Skeleton variant="line" class="w-16" />
+                                <Skeleton variant="line" class="w-28" />
                             </div>
+                            <Skeleton variant="circle" class="h-10 w-10 shrink-0" />
                         </div>
+                    </template>
+                    <div
+                        v-else
+                        v-for="child in children"
+                        :key="child.id"
+                        class="flex items-center gap-4 rounded-2xl bg-white p-4 shadow-md"
+                    >
+                        <button
+                            v-if="child.is_owner"
+                            type="button"
+                            class="flex shrink-0 cursor-pointer rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                            :aria-label="'Editar ' + child.name"
+                            @click="openEditChild(child)"
+                        >
+                            <ChildIcon
+                                :icon="child.icon"
+                                :avatar-url="child.avatar_url"
+                                size="xl"
+                            />
+                        </button>
+                        <div v-else class="flex shrink-0">
+                            <ChildIcon
+                                :icon="child.icon"
+                                :avatar-url="child.avatar_url"
+                                size="xl"
+                            />
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <button
+                                v-if="child.is_owner"
+                                type="button"
+                                class="cursor-pointer text-left focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 rounded"
+                                @click="openEditChild(child)"
+                            >
+                                <p class="truncate text-lg font-bold text-gray-900 hover:text-indigo-600">
+                                    {{ child.name }}
+                                </p>
+                            </button>
+                            <p v-else class="truncate text-lg font-bold text-gray-900">
+                                {{ child.name }}
+                            </p>
+                            <p
+                                class="text-2xl font-bold leading-tight"
+                                :class="child.points >= 0 ? 'text-indigo-600' : 'text-red-600'"
+                            >
+                                {{ child.points }} pts
+                            </p>
+                            <!-- Pts ganados | Logro actual — en la misma línea -->
+                            <p class="text-xs">
+                                <span class="text-gray-400">{{ child.total_points_earned ?? 0 }} puntos totales ganados</span>
+                                <template v-if="getCurrentAchievement(child.total_points_earned)">
+                                    <span class="mx-1 text-gray-300">|</span>
+                                    <span
+                                        class="font-semibold"
+                                        :class="STAGE_COLORS[getCurrentAchievement(child.total_points_earned).color].text"
+                                    >🏆 {{ getDisplayName(getCurrentAchievement(child.total_points_earned)) }}</span>
+                                </template>
+                                <template v-else>
+                                    <span class="mx-1 text-gray-300">|</span>
+                                    <span class="text-gray-400">Sin logro aún</span>
+                                </template>
+                            </p>
+                            <!-- Barra de progreso hacia el próximo logro -->
+                            <div class="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-gray-200">
+                                <div
+                                    class="h-full rounded-full transition-all duration-500"
+                                    :class="getCurrentAchievement(child.total_points_earned)
+                                        ? STAGE_COLORS[getCurrentAchievement(child.total_points_earned).color].badge
+                                        : 'bg-gray-400'"
+                                    :style="{ width: getProgressPercent(child.total_points_earned) + '%' }"
+                                />
+                            </div>
+                            <p v-if="getNextAchievement(child.total_points_earned)" class="mt-0.5 text-xs text-gray-400">
+                                Faltan {{ getPointsToNext(child.total_points_earned) }} pts para Nivel {{ getNextAchievement(child.total_points_earned).level }}
+                            </p>
+                            <p v-else class="mt-0.5 text-xs font-medium text-red-500">¡Nivel máximo! 🏆</p>
+                        </div>
+                        <button
+                            type="button"
+                            class="flex shrink-0 rounded p-2 text-green-600 transition hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-green-500"
+                            title="Compartir ficha por WhatsApp"
+                            aria-label="Compartir por WhatsApp"
+                            :disabled="sharingChildId === child.id"
+                            @click="shareChild(child)"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                            </svg>
+                        </button>
                     </div>
                 </div>
 
-                <div class="mt-8 flex w-full max-w-md flex-col items-center rounded-xl border border-gray-200 bg-white p-6 shadow-sm sm:mx-0">
+                <!-- Botón Logros: sobre fondo gris, igual que Sumar/Restar/Canje -->
+                <div class="mt-4 flex justify-center">
+                    <Link
+                        :href="route('achievements.index')"
+                        class="flex w-full max-w-md items-center justify-center gap-2 rounded-md border border-transparent bg-yellow-500 px-5 py-3 text-sm font-medium text-white shadow-sm transition duration-150 ease-in-out hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.518 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118L2.98 10.1c-.783-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.518-4.673z"/>
+                        </svg>
+                        Logros
+                    </Link>
+                </div>
+
+                <!-- Bloque Compartí: tarjeta ancho completo -->
+                <div class="mt-4 overflow-hidden bg-white shadow-sm sm:rounded-xl">
+                    <div class="flex flex-col items-center p-6">
                     <button
                         type="button"
                         class="flex w-full max-w-md items-center justify-center gap-2 rounded-md border border-transparent bg-green-600 px-5 py-3 text-sm font-medium text-white shadow-sm transition duration-150 ease-in-out hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
@@ -339,6 +375,7 @@ function shareApp() {
                         Si ves que te estamos ayudando a mejorar la relación con tus hijos y su participación y colaboración en las tareas de la casa, compartí esta app con tus amigos a los que creas que le puede ayudar como a vos.
                         <span class="inline-block text-red-500" aria-hidden="true">❤️</span>
                     </p>
+                    </div>
                 </div>
             </div>
         </div>

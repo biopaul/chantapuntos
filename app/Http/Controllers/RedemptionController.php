@@ -19,6 +19,7 @@ class RedemptionController extends Controller
 
         return Inertia::render('Redemptions/Create', [
             'children' => $children,
+            'canjeImageUrl' => asset('images/canje-de-puntos.png'),
         ]);
     }
 }

@@ -30,10 +30,17 @@ php artisan migrate --force
 echo "==> Enlace de storage (si no existe)..."
 php artisan storage:link 2>/dev/null || true
 
-echo "==> Limpiando y cacheando configuración..."
+echo "==> Limpiando todas las cachés de Laravel..."
+php artisan optimize:clear
+
+echo "==> Cacheando configuración para producción..."
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
+php artisan event:cache
+
+echo "==> Limpiando OPcache de PHP..."
+php -r "if (function_exists('opcache_reset')) { opcache_reset(); echo 'OPcache reseteado.'; } else { echo 'OPcache no disponible via CLI.'; }" || true
 
 echo "==> Reiniciando colas (si se usan)..."
 php artisan queue:restart 2>/dev/null || true
