@@ -39,7 +39,7 @@ class HandleInertiaRequests extends Middleware
                 'error' => fn () => $request->session()->get('error'),
                 'new_invitation_url' => fn () => $request->session()->get('new_invitation_url'),
             ],
-            'logoUrl' => asset('images/logo.png'),
+            'logoUrl' => asset('images/logo.png') . '?v=4',
             'achievementsPath' => asset('images/achievements'),
             'app_version' => config('app.version'),
         ];

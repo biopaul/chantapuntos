@@ -1,7 +1,6 @@
 <script setup>
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
-import { usePWAInstall } from '@/composables/usePWAInstall';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, usePage } from '@inertiajs/vue3';
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 
 const props = defineProps({
@@ -12,22 +11,14 @@ const props = defineProps({
     landingImages: {
         type: Object,
         default: () => ({
+            hero: '/images/landing/hero-home.png',
             dashboard: '/images/landing/mockup-dashboard.png',
             tareas: '/images/landing/mockup-tareas.png',
             recompensas: '/images/landing/mockup-recompensas.png',
-            mascota: '/images/landing/mascota-llama.png',
+            papas: '/images/landing/papas-landing.png',
         }),
     },
 });
-
-const {
-    showInstallBanner,
-    showFallbackHint,
-    fallbackHintText,
-    isStandalone,
-    requestInstall,
-    dismissFallbackHint,
-} = usePWAInstall();
 
 // Testimonios: carrusel
 const testimonials = [
@@ -94,12 +85,52 @@ onMounted(() => {
     updateTestimonialTotalPages();
     testimonialAutoplay = setInterval(nextTestimonialPage, 11000);
     window.addEventListener('resize', updateTestimonialTotalPages);
+
+    // Splash — Fase 1: 1500ms de presentación estática, luego animar
+    setTimeout(() => {
+        const el = document.querySelector('header a img');
+        if (el) {
+            const r = el.getBoundingClientRect();
+            splashStyle.value = {
+                position: 'fixed', top: '0', left: '0',
+                width: `${r.width}px`,
+                transform: `translate(${r.left}px, ${r.top}px)`,
+                transition: 'transform 0.5s cubic-bezier(0.4,0,0.2,1), width 0.5s cubic-bezier(0.4,0,0.2,1)',
+                zIndex: '101',
+            };
+        }
+        overlayFading.value = true;
+    }, 1500);
+
+    // Splash — Fase 2a: mostrar header logo justo antes de ocultar el splash (evita blink)
+    setTimeout(() => {
+        headerLogoVisible.value = true;
+    }, 1950);
+
+    // Splash — Fase 2b: ocultar splash logo y overlay
+    setTimeout(() => {
+        splashDone.value = true;
+    }, 2000);  // 1500ms espera + 500ms animación
 });
 
 onBeforeUnmount(() => {
     if (testimonialAutoplay) clearInterval(testimonialAutoplay);
     window.removeEventListener('resize', updateTestimonialTotalPages);
 });
+
+// Splash intro
+// 462px ancho; height = 462 × (170/525) ≈ 150px → half-offsets: 231px / 75px
+const logoUrl = usePage().props.logoUrl ?? '/images/logo.png';
+const splashDone = ref(false);
+const splashStyle = ref({
+    position: 'fixed', top: '0', left: '0',
+    width: '462px',
+    transform: 'translate(calc(50vw - 231px), calc(50vh - 75px))',
+    transition: 'none',
+    zIndex: '101',
+});
+const overlayFading = ref(false);
+const headerLogoVisible = ref(false);
 
 // FAQ: acordeón (solo uno abierto a la vez)
 const faqItems = [
@@ -121,46 +152,67 @@ function toggleFaq(index) {
 
 <template>
     <Head title="Chanta Puntos - Puntos y recompensas para la familia" />
+
+    <!-- Splash intro -->
+    <Teleport to="body">
+        <!-- Fondo blanco que se difumina en 500ms al arrancar la animación -->
+        <div
+            v-if="!splashDone"
+            class="fixed inset-0 z-[100] bg-white transition-opacity"
+            style="transition-duration: 500ms; transition-timing-function: ease-out;"
+            :class="overlayFading ? 'opacity-0 pointer-events-none' : 'opacity-100'"
+        />
+        <!-- Logo que vuela desde el centro hacia el header -->
+        <img
+            v-show="!splashDone"
+            :src="logoUrl"
+            alt="Chanta Puntos"
+            :style="splashStyle"
+            style="position:fixed; top:0; left:0;"
+        />
+    </Teleport>
+
     <div class="min-h-screen flex flex-col bg-gray-50 text-gray-900">
         <!-- Header -->
-        <header class="sticky top-0 z-10 w-full border-b border-gray-200 bg-white/90 backdrop-blur-sm">
-            <div class="mx-auto max-w-7xl px-4 md:px-6">
-                <div class="flex justify-between items-center py-4 md:py-6">
-                    <Link href="/" class="flex items-center focus:outline-none">
-                        <ApplicationLogo class="h-10 w-auto sm:h-12 lg:h-14" />
+        <header class="sticky top-0 z-10 w-full border-b border-gray-200 bg-white/90 backdrop-blur-sm shadow-md px-4 sm:px-6">
+            <div class="mx-auto max-w-6xl flex justify-between items-center py-[10px]">
+                <Link href="/" class="flex items-center focus:outline-none">
+                    <ApplicationLogo
+                        class="h-[48px] w-auto sm:h-[58px] lg:h-[67px]"
+                        :class="headerLogoVisible ? 'opacity-100' : 'opacity-0'"
+                    />
+                </Link>
+                <nav v-if="canLogin" class="flex items-center gap-3">
+                    <Link
+                        v-if="$page.props.auth?.user"
+                        :href="route('dashboard')"
+                        class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2"
+                    >
+                        Ir al dashboard
                     </Link>
-                    <nav v-if="canLogin" class="flex items-center gap-3">
+                    <template v-else>
                         <Link
-                            v-if="$page.props.auth?.user"
-                            :href="route('dashboard')"
+                            :href="route('login')"
                             class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2"
                         >
-                            Ir al dashboard
+                            Iniciar sesión
                         </Link>
-                        <template v-else>
-                            <Link
-                                :href="route('login')"
-                                class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2"
-                            >
-                                Iniciar sesión
-                            </Link>
-                            <Link
-                                v-if="canRegister"
-                                :href="route('register')"
-                                class="inline-flex items-center justify-center rounded-md border border-transparent bg-gray-800 px-5 py-3 text-sm font-medium text-white shadow-sm transition duration-150 ease-in-out hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2"
-                            >
-                                Registrarme
-                            </Link>
-                        </template>
-                    </nav>
-                </div>
+                        <Link
+                            v-if="canRegister"
+                            :href="route('register')"
+                            class="inline-flex items-center justify-center rounded-md border border-transparent bg-gray-800 px-5 py-3 text-sm font-medium text-white shadow-sm transition duration-150 ease-in-out hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2"
+                        >
+                            Registrarme
+                        </Link>
+                    </template>
+                </nav>
             </div>
         </header>
 
         <main class="flex-1">
             <!-- Hero (split layout, SaaS-style) -->
-            <section class="relative overflow-hidden bg-gradient-to-br from-[#FFFBEB] via-white to-gray-50/80 px-4 py-12 sm:px-6 sm:py-16 lg:py-20">
-                <div class="mx-auto max-w-7xl">
+            <section class="relative overflow-hidden bg-gradient-to-br from-[#FFFBEB] via-white to-gray-50/80 px-4 pt-[24px] pb-12 sm:px-6 sm:pt-[40px] sm:pb-16 lg:pt-[56px] lg:pb-20">
+                <div class="mx-auto max-w-6xl">
                     <div class="grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
                         <!-- Left: copy + CTAs -->
                         <div class="flex flex-col justify-center lg:order-1">
@@ -198,27 +250,8 @@ function toggleFaq(index) {
                                         Chantapuntos es la herramienta de parenting que ayuda a gestionar el "mercado" de las tareas diarias. Basada en el concepto de Cuenta Corriente Emocional, transformamos la convivencia en un sistema claro, justo y divertido.
                                     </p>
                                     <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap mt-8">
-                                        <template v-if="showInstallBanner">
-                                            <button
-                                                type="button"
-                                                @click="requestInstall"
-                                                class="inline-flex w-full items-center justify-center gap-2 rounded-3xl bg-amber-400 px-6 py-3.5 text-base font-semibold text-[#1F2937] shadow-lg shadow-amber-400/25 transition hover:bg-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 sm:w-auto"
-                                            >
-                                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                                </svg>
-                                                Empezar ahora
-                                            </button>
-                                        </template>
                                         <Link
-                                            v-else-if="isStandalone"
-                                            :href="route('dashboard')"
-                                            class="inline-flex w-full items-center justify-center gap-2 rounded-3xl bg-amber-400 px-6 py-3.5 text-base font-semibold text-[#1F2937] shadow-lg shadow-amber-400/25 transition hover:bg-amber-500 sm:w-auto"
-                                        >
-                                            Empezar ahora
-                                        </Link>
-                                        <Link
-                                            v-else-if="canRegister"
+                                            v-if="canRegister"
                                             :href="route('register')"
                                             class="inline-flex w-full items-center justify-center gap-2 rounded-3xl bg-amber-400 px-6 py-3.5 text-base font-semibold text-[#1F2937] shadow-lg shadow-amber-400/25 transition hover:bg-amber-500 sm:w-auto"
                                         >
@@ -231,14 +264,6 @@ function toggleFaq(index) {
                                             Ver cómo funciona
                                         </a>
                                     </div>
-                                    <p v-if="showFallbackHint" class="flex flex-wrap items-center gap-2 rounded-2xl bg-amber-50 px-4 py-2.5 text-sm text-amber-800 ring-1 ring-amber-200/60">
-                                        <span>{{ fallbackHintText }}</span>
-                                        <button type="button" aria-label="Cerrar" class="shrink-0 rounded-lg p-1 hover:bg-amber-100" @click="dismissFallbackHint">
-                                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                            </svg>
-                                        </button>
-                                    </p>
                                     <p class="text-sm text-gray-500">
                                         Recomendado por psicólogos infantiles y familias modernas.
                                     </p>
@@ -251,7 +276,7 @@ function toggleFaq(index) {
                                 </div>
                             </Transition>
                         </div>
-                        <!-- Right: mascot / illustration placeholder -->
+                        <!-- Right: hero illustration -->
                         <div class="flex justify-center lg:order-2">
                             <Transition
                                 enter-active-class="transition duration-600 ease-out delay-150"
@@ -259,16 +284,12 @@ function toggleFaq(index) {
                                 enter-to-class="opacity-100 translate-x-0"
                                 appear
                             >
-                                <div class="w-full max-w-md rounded-3xl bg-white/60 p-6 shadow-xl ring-1 ring-gray-200/60 backdrop-blur-sm sm:p-8 lg:max-w-lg">
-                                    <!-- Placeholder: reemplazá por tu imagen de mascota (llama) -->
-                                    <div class="flex aspect-square items-center justify-center rounded-2xl bg-gradient-to-br from-amber-50 to-amber-100/80 text-gray-400">
-                                        <div class="text-center">
-                                            <svg class="mx-auto h-16 w-16 text-amber-300/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6a2 2 0 11-4 0 2 2 0 014 0zM7 20h10" />
-                                            </svg>
-                                            <p class="mt-2 text-sm font-medium">Tu mascota (llama) aquí</p>
-                                        </div>
-                                    </div>
+                                <div class="w-full max-w-sm lg:max-w-md xl:max-w-lg">
+                                    <img
+                                        :src="landingImages?.hero"
+                                        alt="Llamas Chantapuntos con tareas del hogar"
+                                        class="h-auto w-full object-contain drop-shadow-xl"
+                                    />
                                 </div>
                             </Transition>
                         </div>
@@ -553,44 +574,44 @@ function toggleFaq(index) {
 
             <!-- Galería mockups -->
             <section class="border-t border-gray-200 bg-gray-100/50 px-4 py-12 sm:px-6 sm:py-16">
-                <div class="mx-auto max-w-md">
+                <div class="mx-auto max-w-5xl">
                     <h2 class="text-center text-3xl font-bold text-gray-900 sm:text-4xl">
                         Así se ve la app
                     </h2>
-                    <div class="mt-12 flex flex-col items-center gap-10">
-                        <div class="flex w-full max-w-[220px] flex-col items-center text-center">
-                            <div class="w-full overflow-hidden rounded-2xl shadow-lg aspect-[9/19.5] bg-white">
+                    <div class="mt-12 grid grid-cols-1 gap-10 sm:grid-cols-3">
+                        <div class="flex flex-col items-center text-center">
+                            <div class="w-full max-w-[220px] mx-auto overflow-hidden rounded-2xl shadow-lg aspect-[9/19.5] bg-white">
                                 <img
-                                    :src="landingImages?.dashboard ?? '/images/landing/mockup-dashboard.png'"
+                                    :src="(landingImages?.dashboard ?? '/images/landing/mockup-dashboard.png') + '?v=2'"
                                     alt="Pantalla del dashboard con niños y puntos"
-                                    class="h-full w-full object-cover object-center"
+                                    class="h-full w-full object-cover object-top"
                                 />
                             </div>
-                            <p class="mt-3 text-base text-gray-700 sm:text-lg">
+                            <p class="mt-4 text-base text-gray-700 sm:text-lg">
                                 Dashboard con los chicos y sus puntos. Sumá o restá puntos según las tareas que cumplan.
                             </p>
                         </div>
-                        <div class="flex w-full max-w-[220px] flex-col items-center text-center">
-                            <div class="w-full overflow-hidden rounded-2xl shadow-lg aspect-[9/19.5] bg-white">
+                        <div class="flex flex-col items-center text-center">
+                            <div class="w-full max-w-[220px] mx-auto overflow-hidden rounded-2xl shadow-lg aspect-[9/19.5] bg-white">
                                 <img
-                                    :src="landingImages?.tareas ?? '/images/landing/mockup-tareas.png'"
-                                    alt="Lista de tareas con puntos"
-                                    class="h-full w-full object-cover object-center"
+                                    :src="(landingImages?.tareas ?? '/images/landing/mockup-tareas.png') + '?v=2'"
+                                    alt="Lista de acciones con puntos"
+                                    class="h-full w-full object-cover object-top"
                                 />
                             </div>
-                            <p class="mt-3 text-base text-gray-700 sm:text-lg">
+                            <p class="mt-4 text-base text-gray-700 sm:text-lg">
                                 Definí tareas con sus puntos. Cada acción puede sumar o restar según lo que acuerden en familia.
                             </p>
                         </div>
-                        <div class="flex w-full max-w-[220px] flex-col items-center text-center">
-                            <div class="w-full overflow-hidden rounded-2xl shadow-lg aspect-[9/19.5] bg-white">
+                        <div class="flex flex-col items-center text-center">
+                            <div class="w-full max-w-[220px] mx-auto overflow-hidden rounded-2xl shadow-lg aspect-[9/19.5] bg-white">
                                 <img
-                                    :src="landingImages?.recompensas ?? '/images/landing/mockup-recompensas.png'"
+                                    :src="(landingImages?.recompensas ?? '/images/landing/mockup-recompensas.png') + '?v=2'"
                                     alt="Pantalla de recompensas para canjear"
-                                    class="h-full w-full object-cover object-center"
+                                    class="h-full w-full object-cover object-top"
                                 />
                             </div>
-                            <p class="mt-3 text-base text-gray-700 sm:text-lg">
+                            <p class="mt-4 text-base text-gray-700 sm:text-lg">
                                 Canjeá recompensas. Los chicos usan sus puntos para premios que ustedes elijan.
                             </p>
                         </div>
@@ -680,27 +701,8 @@ function toggleFaq(index) {
                                 Creá tu cuenta gratis y probalo en familia. Instalá la app en tu celular y empezá a sumar depósitos emocionales hoy.
                             </p>
                             <div class="mt-10 flex flex-col gap-4 sm:flex-row sm:flex-wrap">
-                                <template v-if="showInstallBanner">
-                                    <button
-                                        type="button"
-                                        @click="requestInstall"
-                                        class="inline-flex w-full items-center justify-center gap-2 rounded-3xl bg-amber-400 px-6 py-3.5 text-base font-semibold text-slate-900 shadow-lg shadow-amber-400/25 transition hover:bg-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 sm:w-auto"
-                                    >
-                                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                        </svg>
-                                        Crear cuenta gratis
-                                    </button>
-                                </template>
                                 <Link
-                                    v-else-if="isStandalone"
-                                    :href="route('dashboard')"
-                                    class="inline-flex w-full items-center justify-center rounded-3xl bg-amber-400 px-6 py-3.5 text-base font-semibold text-slate-900 shadow-lg shadow-amber-400/25 transition hover:bg-amber-500 sm:w-auto"
-                                >
-                                    Abrir Chanta Puntos
-                                </Link>
-                                <Link
-                                    v-else-if="canRegister"
+                                    v-if="canRegister"
                                     :href="route('register')"
                                     class="inline-flex w-full items-center justify-center rounded-3xl bg-amber-400 px-6 py-3.5 text-base font-semibold text-slate-900 shadow-lg shadow-amber-400/25 transition hover:bg-amber-500 sm:w-auto"
                                 >
@@ -714,25 +716,17 @@ function toggleFaq(index) {
                                     Ya tengo cuenta
                                 </Link>
                             </div>
-                            <p v-if="showFallbackHint" class="mt-4 flex flex-wrap items-center gap-2 rounded-2xl bg-amber-50 px-4 py-2.5 text-sm text-amber-800 ring-1 ring-amber-200/60">
-                                <span>{{ fallbackHintText }}</span>
-                                <button type="button" aria-label="Cerrar" class="shrink-0 rounded-lg p-1 hover:bg-amber-100" @click="dismissFallbackHint">
-                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
-                                </button>
-                            </p>
                             <p class="mt-6 text-sm text-slate-500">
                                 Recomendado por psicólogos infantiles y familias modernas.
                             </p>
                         </div>
-                        <!-- Derecha (~40%): mascota -->
+                        <!-- Derecha (~40%): papás llamas -->
                         <div class="flex justify-center lg:justify-end">
-                            <div class="relative w-full max-w-[280px] sm:max-w-[320px] lg:max-w-[380px]">
+                            <div class="relative w-full max-w-[280px] sm:max-w-[320px] lg:max-w-[400px]">
                                 <img
-                                    :src="landingImages?.mascota ?? '/images/landing/mascota-llama.png'"
-                                    alt="Mascota Chantapuntos"
-                                    class="h-auto w-full object-contain object-right"
+                                    :src="landingImages?.papas"
+                                    alt="Papás Chantapuntos"
+                                    class="h-auto w-full object-contain drop-shadow-xl"
                                 />
                             </div>
                         </div>

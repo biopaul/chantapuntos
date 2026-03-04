@@ -93,92 +93,90 @@ function isCustom(action) {
         <div class="py-6">
             <div class="mx-auto max-w-4xl">
                 <div class="overflow-hidden bg-white shadow-sm sm:rounded-xl">
-                    <div class="p-6">
-                        <p class="mb-4 text-gray-600">
+                    <div class="p-3">
+                        <p class="mb-3 text-sm text-gray-600">
                             Tareas precargadas y las que añadas. Editá nombre y puntaje (-10 a 10). Las de puntaje positivo suman puntos; las negativas restan.
                         </p>
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead>
-                                    <tr>
-                                        <th class="max-w-[70%] px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">
-                                            Descripción
-                                        </th>
-                                        <th class="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">
-                                            Puntaje
-                                        </th>
-                                        <th class="px-4 py-3 text-right text-xs font-medium uppercase text-gray-500">
-                                            Opciones
-                                        </th>
+                        <table class="w-full divide-y divide-gray-200">
+                            <thead>
+                                <tr>
+                                    <th class="px-2 py-2 text-left text-xs font-medium uppercase text-gray-500">
+                                        Descripción
+                                    </th>
+                                    <th class="px-2 py-2 text-left text-xs font-medium uppercase text-gray-500">
+                                        Pts
+                                    </th>
+                                    <th class="px-2 py-2 text-right text-xs font-medium uppercase text-gray-500">
+                                        Opciones
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <template v-if="!showContent">
+                                    <tr v-for="n in 8" :key="'sk-' + n">
+                                        <td class="px-2 py-2"><Skeleton variant="line" class="w-36" /></td>
+                                        <td class="px-2 py-2"><Skeleton variant="line" class="w-8" /></td>
+                                        <td class="px-2 py-2 text-right"><Skeleton variant="line" class="ml-auto w-10" /></td>
                                     </tr>
-                                </thead>
-                                <tbody class="divide-y divide-gray-200">
-                                    <template v-if="!showContent">
-                                        <tr v-for="n in 8" :key="'sk-' + n">
-                                            <td class="px-4 py-3"><Skeleton variant="line" class="w-48" /></td>
-                                            <td class="px-4 py-3"><Skeleton variant="line" class="w-12" /></td>
-                                            <td class="px-4 py-3 text-right"><Skeleton variant="line" class="ml-auto w-10" /></td>
-                                        </tr>
-                                    </template>
-                                    <tr v-else v-for="action in actions" :key="action.id">
-                                        <td class="min-w-0 max-w-[70%] px-4 py-3 text-sm text-gray-900">
-                                            <div class="flex flex-wrap items-center gap-2">
-                                                <span class="min-w-0 break-words">{{ action.name }}</span>
-                                                <span
-                                                    class="shrink-0 rounded px-2 py-0.5 text-xs font-medium"
-                                                    :class="isCustom(action) ? 'bg-orange-100 text-orange-800' : 'bg-blue-100 text-blue-800'"
-                                                >
-                                                    {{ isCustom(action) ? 'Personal' : 'Sistema' }}
-                                                </span>
-                                            </div>
-                                        </td>
-                                        <td class="whitespace-nowrap px-4 py-3">
+                                </template>
+                                <tr v-else v-for="action in actions" :key="action.id">
+                                    <td class="px-2 py-2 text-sm text-gray-900">
+                                        <div class="flex flex-wrap items-center gap-1.5">
+                                            <span class="break-words">{{ action.name }}</span>
                                             <span
-                                                class="inline-flex rounded-full px-2 py-1 text-xs font-medium"
-                                                :class="
-                                                    action.points > 0
-                                                        ? 'bg-green-100 text-green-800'
-                                                        : action.points < 0
-                                                        ? 'bg-red-100 text-red-800'
-                                                        : 'bg-gray-100 text-gray-800'
-                                                "
+                                                class="shrink-0 rounded px-1.5 py-0.5 text-xs font-medium"
+                                                :class="isCustom(action) ? 'bg-orange-100 text-orange-800' : 'bg-blue-100 text-blue-800'"
                                             >
-                                                {{ action.points > 0 ? '+' : '' }}{{ action.points }}
+                                                {{ isCustom(action) ? 'Personal' : 'Sistema' }}
                                             </span>
-                                        </td>
-                                        <td class="whitespace-nowrap px-4 py-3 text-right">
-                                            <div class="inline-flex items-center gap-2">
-                                                <button
-                                                    type="button"
-                                                    class="rounded p-1.5 text-indigo-600 transition hover:bg-indigo-50 hover:text-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                                    title="Editar"
-                                                    aria-label="Editar"
-                                                    @click="openEdit(action)"
-                                                >
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                                                    </svg>
-                                                </button>
-                                                <Link
-                                                    v-if="isCustom(action)"
-                                                    :href="route('actions.destroy', action)"
-                                                    method="delete"
-                                                    as="button"
-                                                    class="rounded p-1.5 text-red-600 transition hover:bg-red-50 hover:text-red-800 focus:outline-none focus:ring-2 focus:ring-red-500"
-                                                    title="Eliminar"
-                                                    aria-label="Eliminar"
-                                                    preserve-scroll
-                                                >
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                    </svg>
-                                                </Link>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                                        </div>
+                                    </td>
+                                    <td class="whitespace-nowrap px-2 py-2">
+                                        <span
+                                            class="inline-flex rounded-full px-1.5 py-0.5 text-xs font-medium"
+                                            :class="
+                                                action.points > 0
+                                                    ? 'bg-green-100 text-green-800'
+                                                    : action.points < 0
+                                                    ? 'bg-red-100 text-red-800'
+                                                    : 'bg-gray-100 text-gray-800'
+                                            "
+                                        >
+                                            {{ action.points > 0 ? '+' : '' }}{{ action.points }}
+                                        </span>
+                                    </td>
+                                    <td class="whitespace-nowrap px-2 py-2 text-right">
+                                        <div class="inline-flex items-center gap-1">
+                                            <button
+                                                type="button"
+                                                class="rounded p-1 text-indigo-600 transition hover:bg-indigo-50 hover:text-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                                title="Editar"
+                                                aria-label="Editar"
+                                                @click="openEdit(action)"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                                </svg>
+                                            </button>
+                                            <Link
+                                                v-if="isCustom(action)"
+                                                :href="route('actions.destroy', action)"
+                                                method="delete"
+                                                as="button"
+                                                class="rounded p-1 text-red-600 transition hover:bg-red-50 hover:text-red-800 focus:outline-none focus:ring-2 focus:ring-red-500"
+                                                title="Eliminar"
+                                                aria-label="Eliminar"
+                                                preserve-scroll
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
+                                            </Link>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>

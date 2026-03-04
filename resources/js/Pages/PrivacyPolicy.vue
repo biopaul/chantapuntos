@@ -12,37 +12,35 @@ defineProps({
     <Head title="Política de Privacidad - Chanta Puntos" />
     <div class="min-h-screen flex flex-col bg-gray-50 text-gray-900">
         <!-- Header (mismo que Welcome) -->
-        <header class="sticky top-0 z-10 w-full border-b border-gray-200 bg-white/90 backdrop-blur-sm">
-            <div class="mx-auto max-w-7xl px-4 md:px-6">
-                <div class="flex justify-between items-center py-4 md:py-6">
-                    <Link href="/" class="flex items-center focus:outline-none">
-                        <ApplicationLogo class="h-10 w-auto sm:h-12 lg:h-14" />
+        <header class="sticky top-0 z-10 w-full border-b border-gray-200 bg-white/90 backdrop-blur-sm px-4 sm:px-6">
+            <div class="mx-auto max-w-6xl flex justify-between items-center py-[10px]">
+                <Link href="/" class="flex items-center focus:outline-none">
+                    <ApplicationLogo class="h-[48px] w-auto sm:h-[58px] lg:h-[67px]" />
+                </Link>
+                <nav v-if="canLogin" class="flex items-center gap-3">
+                    <Link
+                        v-if="$page.props.auth?.user"
+                        :href="route('dashboard')"
+                        class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2"
+                    >
+                        Ir al dashboard
                     </Link>
-                    <nav v-if="canLogin" class="flex items-center gap-3">
+                    <template v-else>
                         <Link
-                            v-if="$page.props.auth?.user"
-                            :href="route('dashboard')"
+                            :href="route('login')"
                             class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2"
                         >
-                            Ir al dashboard
+                            Iniciar sesión
                         </Link>
-                        <template v-else>
-                            <Link
-                                :href="route('login')"
-                                class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2"
-                            >
-                                Iniciar sesión
-                            </Link>
-                            <Link
-                                v-if="canRegister"
-                                :href="route('register')"
-                                class="inline-flex items-center justify-center rounded-md border border-transparent bg-gray-800 px-5 py-3 text-sm font-medium text-white shadow-sm transition duration-150 ease-in-out hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2"
-                            >
-                                Registrarme
-                            </Link>
-                        </template>
-                    </nav>
-                </div>
+                        <Link
+                            v-if="canRegister"
+                            :href="route('register')"
+                            class="inline-flex items-center justify-center rounded-md border border-transparent bg-gray-800 px-5 py-3 text-sm font-medium text-white shadow-sm transition duration-150 ease-in-out hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2"
+                        >
+                            Registrarme
+                        </Link>
+                    </template>
+                </nav>
             </div>
         </header>
 

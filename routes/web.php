@@ -27,10 +27,11 @@ Route::get('/', function () {
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
         'landingImages' => [
-            'dashboard' => asset('images/landing/mockup-dashboard.png'),
-            'tareas' => asset('images/landing/mockup-tareas.png'),
-            'recompensas' => asset('images/landing/mockup-recompensas.png'),
-            'mascota' => asset('images/landing/mascota-llama.png'),
+            'hero' => asset('images/landing/hero-home.png'),
+            'dashboard' => asset('images/landing/mockup-dashboard.png') . '?v=2',
+            'tareas' => asset('images/landing/mockup-tareas.png') . '?v=2',
+            'recompensas' => asset('images/landing/mockup-recompensas.png') . '?v=2',
+            'papas' => asset('images/landing/papas-landing.png'),
         ],
     ]);
 });

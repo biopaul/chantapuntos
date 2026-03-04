@@ -10,6 +10,7 @@ use App\Models\Child;
 use App\Models\PointTransaction;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -31,9 +32,12 @@ class DashboardController extends Controller
             return redirect()->route('onboarding');
         }
 
-        $actionIds = $user->actions()->pluck('id')->toArray();
-        $systemActions = Action::whereNull('user_id')->orderBy('name')->get();
-        $customActions = $user->actions()->orderBy('name')->get();
+        $systemActions = Cache::remember('system_actions', now()->addHours(24), fn () =>
+            Action::whereNull('user_id')->orderBy('name')->get()
+        );
+        $customActions = Cache::remember("user_actions:{$user->id}", now()->addMinutes(10), fn () =>
+            $user->actions()->orderBy('name')->get()
+        );
         $allActions = $systemActions->merge($customActions)->sortBy('name')->values();
 
         $canRedeem = $children->contains(fn ($c) => $c->points > 0);
