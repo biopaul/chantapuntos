@@ -35,9 +35,14 @@ class DashboardController extends Controller
         $systemActions = Cache::remember('system_actions', now()->addHours(24), fn () =>
             Action::whereNull('user_id')->orderBy('name')->get()
         );
-        $customActions = Cache::remember("user_actions:{$user->id}", now()->addMinutes(10), fn () =>
-            $user->actions()->orderBy('name')->get()
-        );
+
+        // Acciones custom: propias + las de todos los co-padres que comparten hijos
+        $coParentIds = $user->coParentIds();
+        $customActions = Action::where('user_id', $user->id)
+            ->when($coParentIds->isNotEmpty(), fn ($q) => $q->orWhereIn('user_id', $coParentIds))
+            ->orderBy('name')
+            ->get();
+
         $allActions = $systemActions->merge($customActions)->sortBy('name')->values();
 
         $canRedeem = $children->contains(fn ($c) => $c->points > 0);

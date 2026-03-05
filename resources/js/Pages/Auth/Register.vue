@@ -2,7 +2,6 @@
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 
@@ -92,23 +91,29 @@ const submit = () => {
                 />
             </div>
 
-            <div class="mt-4 flex items-center justify-end">
-                <Link
-                    :href="route('login')"
-                    class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                >
-                    ¿Ya tenés cuenta?
-                </Link>
-
-                <PrimaryButton
+            <!-- Botón verde ancho completo -->
+            <div class="mt-6">
+                <button
                     type="submit"
-                    class="ms-4"
-                    :class="{ 'opacity-25': form.processing }"
+                    class="flex w-full items-center justify-center rounded-md border border-transparent bg-green-600 px-5 py-3 text-sm font-medium text-white shadow-sm transition duration-150 ease-in-out hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-25"
                     :disabled="form.processing"
                 >
                     Crear cuenta
-                </PrimaryButton>
+                </button>
             </div>
         </form>
+
+        <!-- Enlace a login fuera de la tarjeta -->
+        <template #below>
+            <p class="mt-6 text-center text-sm text-gray-600">
+                ¿Ya tenés cuenta?
+                <Link
+                    :href="route('login')"
+                    class="font-semibold text-indigo-600 underline decoration-indigo-400/60 underline-offset-2 hover:text-indigo-800 focus:outline-none"
+                >
+                    Iniciá sesión
+                </Link>
+            </p>
+        </template>
     </GuestLayout>
 </template>

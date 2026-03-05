@@ -22,9 +22,12 @@ class PointTransactionController extends Controller
         ]);
 
         $child = Child::where('id', $validated['child_id'])->where('user_id', $request->user()->id)->firstOrFail();
+        $coParentIds = $request->user()->coParentIds();
         $action = Action::where('id', $validated['action_id'])
-            ->where(function ($q) use ($request) {
-                $q->whereNull('user_id')->orWhere('user_id', $request->user()->id);
+            ->where(function ($q) use ($request, $coParentIds) {
+                $q->whereNull('user_id')
+                  ->orWhere('user_id', $request->user()->id)
+                  ->when($coParentIds->isNotEmpty(), fn ($q2) => $q2->orWhereIn('user_id', $coParentIds));
             })
             ->firstOrFail();
 

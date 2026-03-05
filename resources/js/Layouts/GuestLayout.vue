@@ -25,6 +25,10 @@ const logoUrl = page.props.logoUrl ?? '/images/logo.png';
         >
             <slot />
         </div>
+
+        <!-- Contenido opcional fuera de la tarjeta (ej: link de registro) -->
+        <slot name="below" />
+
         <UpdateRequiredModal />
     </div>
 </template>

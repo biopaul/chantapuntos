@@ -54,10 +54,17 @@ class RegisteredUserController extends Controller
             ->first();
         if ($pendingInvitation) {
             $pendingInvitation->acceptFor($user);
-            return redirect()->intended(route('dashboard'))
+            return redirect()->route('dashboard')
                 ->with('message', 'Cuenta creada. Ya podés ver y gestionar los hijos que te compartieron.');
         }
 
-        return redirect()->intended(route('dashboard'));
+        // Solo respetar la URL "intended" si apunta a una invitación; en cualquier
+        // otro caso ir siempre al dashboard para evitar redirecciones inesperadas.
+        $intended = $request->session()->pull('url.intended');
+        if ($intended && str_contains($intended, '/invitations/accept')) {
+            return redirect($intended);
+        }
+
+        return redirect()->route('dashboard');
     }
 }

@@ -33,7 +33,14 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard'));
+        // Solo respetar la URL "intended" si apunta a una invitación; en cualquier
+        // otro caso ir siempre al dashboard para evitar redirecciones inesperadas.
+        $intended = $request->session()->pull('url.intended');
+        if ($intended && str_contains($intended, '/invitations/accept')) {
+            return redirect($intended);
+        }
+
+        return redirect()->route('dashboard');
     }
 
     /**

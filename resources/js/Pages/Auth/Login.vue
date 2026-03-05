@@ -2,7 +2,6 @@
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 
@@ -46,7 +45,6 @@ const submit = () => {
         <form @submit.prevent="submit">
             <div>
                 <InputLabel for="email" value="Correo electrónico" />
-
                 <TextInput
                     id="email"
                     type="email"
@@ -56,13 +54,11 @@ const submit = () => {
                     autofocus
                     autocomplete="username"
                 />
-
                 <InputError class="mt-2" :message="form.errors.email" />
             </div>
 
             <div class="mt-4">
                 <InputLabel for="password" value="Contraseña" />
-
                 <TextInput
                     id="password"
                     type="password"
@@ -71,28 +67,42 @@ const submit = () => {
                     required
                     autocomplete="current-password"
                 />
-
                 <InputError class="mt-2" :message="form.errors.password" />
             </div>
 
-            <div class="mt-4 flex items-center justify-end">
+            <!-- Botón verde ancho completo -->
+            <div class="mt-6">
+                <button
+                    type="submit"
+                    class="flex w-full items-center justify-center rounded-md border border-transparent bg-green-600 px-5 py-3 text-sm font-medium text-white shadow-sm transition duration-150 ease-in-out hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-25"
+                    :disabled="form.processing"
+                >
+                    Iniciar sesión
+                </button>
+            </div>
+
+            <!-- Recuperar contraseña centrado -->
+            <div v-if="canResetPassword" class="mt-4 text-center">
                 <Link
-                    v-if="canResetPassword"
                     :href="route('password.request')"
                     class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                 >
                     ¿Olvidaste tu contraseña?
                 </Link>
-
-                <PrimaryButton
-                    type="submit"
-                    class="ms-4"
-                    :class="{ 'opacity-25': form.processing }"
-                    :disabled="form.processing"
-                >
-                    Iniciar sesión
-                </PrimaryButton>
             </div>
         </form>
+
+        <!-- Enlace de registro fuera de la tarjeta -->
+        <template #below>
+            <p class="mt-6 text-center text-sm text-gray-600">
+                Aún no tenés una cuenta:
+                <Link
+                    :href="route('register')"
+                    class="font-semibold text-indigo-600 underline decoration-indigo-400/60 underline-offset-2 hover:text-indigo-800 focus:outline-none"
+                >
+                    Creala ahora
+                </Link>
+            </p>
+        </template>
     </GuestLayout>
 </template>

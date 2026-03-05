@@ -21,9 +21,14 @@ class ActionController extends Controller
         $systemActions = Cache::remember('system_actions', now()->addHours(24), fn () =>
             Action::whereNull('user_id')->orderBy('name')->get()
         );
-        $customActions = Cache::remember("user_actions:{$user->id}", now()->addMinutes(10), fn () =>
-            $user->actions()->orderBy('name')->get()
-        );
+
+        // Acciones custom: propias + las de todos los co-padres que comparten hijos
+        $coParentIds = $user->coParentIds();
+        $customActions = Action::where('user_id', $user->id)
+            ->when($coParentIds->isNotEmpty(), fn ($q) => $q->orWhereIn('user_id', $coParentIds))
+            ->orderBy('name')
+            ->get();
+
         $actions = $systemActions->merge($customActions)->sortBy('name')->values();
 
         return Inertia::render('Actions/Index', [
@@ -34,7 +39,6 @@ class ActionController extends Controller
     public function store(StoreActionRequest $request): RedirectResponse
     {
         $request->user()->actions()->create($request->validated());
-        Cache::forget("user_actions:{$request->user()->id}");
         return redirect()->route('actions.index')->with('message', 'Acción creada.');
     }
 
@@ -46,8 +50,6 @@ class ActionController extends Controller
         $action->update($request->validated());
         if ($action->user_id === null) {
             Cache::forget('system_actions');
-        } else {
-            Cache::forget("user_actions:{$request->user()->id}");
         }
         return redirect()->route('actions.index')->with('message', 'Acción actualizada.');
     }
@@ -61,7 +63,6 @@ class ActionController extends Controller
             abort(403);
         }
         $action->delete();
-        Cache::forget("user_actions:{$request->user()->id}");
         return redirect()->route('actions.index')->with('message', 'Acción eliminada.');
     }
 }

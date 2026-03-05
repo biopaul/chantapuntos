@@ -17,7 +17,7 @@ import {
     STAGE_COLORS,
 } from '@/utils/achievements';
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import { onMounted, ref } from 'vue';
+import { onMounted, onUnmounted, reactive, ref } from 'vue';
 
 const props = defineProps({
     children: { type: Array, required: true },
@@ -141,6 +141,30 @@ function shareApp() {
     const text = 'Te recomiendo Chanta Puntos, una app para mejorar la relación con tus hijos y su participación en las tareas de la casa: ' + url;
     window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
 }
+
+// --- Flip cards ---
+const revealedSet = reactive(new Set());
+const revealTimers = {};
+
+function revealCard(childId) {
+    revealedSet.add(childId);
+    if (revealTimers[childId]) clearTimeout(revealTimers[childId]);
+    revealTimers[childId] = setTimeout(() => hideCard(childId), 15000);
+}
+
+function hideCard(childId) {
+    revealedSet.delete(childId);
+    if (revealTimers[childId]) {
+        clearTimeout(revealTimers[childId]);
+        delete revealTimers[childId];
+    }
+}
+
+const isRevealed = (childId) => revealedSet.has(childId);
+
+onUnmounted(() => {
+    Object.values(revealTimers).forEach(clearTimeout);
+});
 </script>
 
 <template>
@@ -218,97 +242,168 @@ function shareApp() {
                             <Skeleton variant="circle" class="h-10 w-10 shrink-0" />
                         </div>
                     </template>
+                    <!-- Wrapper de perspectiva por tarjeta -->
                     <div
                         v-else
                         v-for="child in children"
                         :key="child.id"
-                        class="flex items-center gap-4 rounded-2xl bg-white p-4 shadow-md"
+                        style="perspective: 800px"
                     >
-                        <button
-                            v-if="child.is_owner"
-                            type="button"
-                            class="flex shrink-0 cursor-pointer rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                            :aria-label="'Editar ' + child.name"
-                            @click="openEditChild(child)"
-                        >
-                            <ChildIcon
-                                :icon="child.icon"
-                                :avatar-url="child.avatar_url"
-                                size="xl"
-                            />
-                        </button>
-                        <div v-else class="flex shrink-0">
-                            <ChildIcon
-                                :icon="child.icon"
-                                :avatar-url="child.avatar_url"
-                                size="xl"
-                            />
-                        </div>
-                        <div class="min-w-0 flex-1">
-                            <!-- Nombre + botón WhatsApp en la misma línea -->
-                            <div class="flex items-center justify-between gap-2">
+                        <Transition name="flip" mode="out-in">
+                            <!-- CARA OCULTA: misma estructura que revelada + franja celeste absoluta -->
+                            <div
+                                v-if="!isRevealed(child.id)"
+                                key="hidden"
+                                class="relative overflow-hidden rounded-2xl bg-white shadow-md cursor-pointer"
+                                :aria-label="'Ver puntos de ' + child.name"
+                                @click="revealCard(child.id)"
+                            >
+                                <div class="flex items-center gap-4 px-4 pt-4 pb-12">
+                                    <!-- Avatar/ícono real del hijo -->
+                                    <div class="flex shrink-0">
+                                        <ChildIcon
+                                            :icon="child.icon"
+                                            :avatar-url="child.avatar_url"
+                                            size="xl"
+                                        />
+                                    </div>
+                                    <div class="min-w-0 flex-1">
+                                        <!-- Fila nombre + ícono de ojo (misma estructura que la fila nombre+WA) -->
+                                        <div class="flex items-center justify-between gap-2">
+                                            <p class="min-w-0 truncate text-lg font-bold text-gray-900">{{ child.name }}</p>
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0 text-cyan-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                            </svg>
+                                        </div>
+                                        <!-- Skeleton de puntos -->
+                                        <div class="mt-0.5 h-7 w-20 rounded-md bg-gray-200 animate-pulse" />
+                                        <!-- Skeleton de logro -->
+                                        <div class="mt-1 h-3 w-40 rounded bg-gray-200 animate-pulse" />
+                                        <!-- Skeleton de barra de progreso -->
+                                        <div class="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-gray-200 animate-pulse" />
+                                        <!-- Espacio para la siguiente línea (igual que "Faltan X pts") -->
+                                        <div class="mt-0.5 h-3 w-32 rounded bg-gray-200 animate-pulse" />
+                                    </div>
+                                </div>
+                                <!-- Franja celeste absolutamente posicionada al fondo -->
+                                <div class="absolute inset-x-0 bottom-0 flex items-center gap-2 bg-cyan-500 px-4 py-2.5">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                    <span class="text-sm font-medium text-white">Tocá para ver los puntos</span>
+                                </div>
+                            </div>
+
+                            <!-- CARA REVELADA: pb-12 igual que oculta para altura idéntica -->
+                            <div
+                                v-else
+                                key="revealed"
+                                class="flex items-center gap-4 rounded-2xl bg-white px-4 pt-4 pb-12 shadow-md"
+                            >
                                 <button
                                     v-if="child.is_owner"
                                     type="button"
-                                    class="min-w-0 cursor-pointer text-left focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 rounded"
+                                    class="flex shrink-0 cursor-pointer rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                    :aria-label="'Editar ' + child.name"
                                     @click="openEditChild(child)"
                                 >
-                                    <p class="truncate text-lg font-bold text-gray-900 hover:text-indigo-600">
-                                        {{ child.name }}
+                                    <ChildIcon
+                                        :icon="child.icon"
+                                        :avatar-url="child.avatar_url"
+                                        size="xl"
+                                    />
+                                </button>
+                                <div v-else class="flex shrink-0">
+                                    <ChildIcon
+                                        :icon="child.icon"
+                                        :avatar-url="child.avatar_url"
+                                        size="xl"
+                                    />
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <!-- Nombre + botones WhatsApp y ocultar en la misma línea -->
+                                    <div class="flex items-center justify-between gap-2">
+                                        <button
+                                            v-if="child.is_owner"
+                                            type="button"
+                                            class="min-w-0 cursor-pointer text-left focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 rounded"
+                                            @click="openEditChild(child)"
+                                        >
+                                            <p class="truncate text-lg font-bold text-gray-900 hover:text-indigo-600">
+                                                {{ child.name }}
+                                            </p>
+                                        </button>
+                                        <p v-else class="min-w-0 truncate text-lg font-bold text-gray-900">
+                                            {{ child.name }}
+                                        </p>
+                                        <div class="flex shrink-0 items-center gap-1">
+                                            <!-- Botón ocultar puntos -->
+                                            <button
+                                                type="button"
+                                                class="rounded p-1 text-gray-400 transition hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400"
+                                                title="Ocultar puntos"
+                                                aria-label="Ocultar puntos"
+                                                @click.stop="hideCard(child.id)"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                                                </svg>
+                                            </button>
+                                            <!-- Botón WhatsApp -->
+                                            <button
+                                                type="button"
+                                                class="rounded p-1 text-green-600 transition hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-green-500"
+                                                title="Compartir ficha por WhatsApp"
+                                                aria-label="Compartir por WhatsApp"
+                                                :disabled="sharingChildId === child.id"
+                                                @click.stop="shareChild(child)"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <p
+                                        class="text-2xl font-bold leading-tight"
+                                        :class="child.points >= 0 ? 'text-indigo-600' : 'text-red-600'"
+                                    >
+                                        {{ child.points }} pts
                                     </p>
-                                </button>
-                                <p v-else class="min-w-0 truncate text-lg font-bold text-gray-900">
-                                    {{ child.name }}
-                                </p>
-                                <button
-                                    type="button"
-                                    class="shrink-0 rounded p-1 text-green-600 transition hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-green-500"
-                                    title="Compartir ficha por WhatsApp"
-                                    aria-label="Compartir por WhatsApp"
-                                    :disabled="sharingChildId === child.id"
-                                    @click="shareChild(child)"
-                                >
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                                    </svg>
-                                </button>
+                                    <!-- Pts ganados | Logro actual — en la misma línea -->
+                                    <p class="text-xs">
+                                        <span class="text-gray-400">{{ child.total_points_earned ?? 0 }} puntos totales ganados</span>
+                                        <template v-if="getCurrentAchievement(child.total_points_earned)">
+                                            <span class="mx-1 text-gray-300">|</span>
+                                            <span
+                                                class="font-semibold"
+                                                :class="STAGE_COLORS[getCurrentAchievement(child.total_points_earned).color].text"
+                                            >🏆 {{ getDisplayName(getCurrentAchievement(child.total_points_earned)) }}</span>
+                                        </template>
+                                        <template v-else>
+                                            <span class="mx-1 text-gray-300">|</span>
+                                            <span class="text-gray-400">Sin logro aún</span>
+                                        </template>
+                                    </p>
+                                    <!-- Barra de progreso hacia el próximo logro -->
+                                    <div class="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-gray-200">
+                                        <div
+                                            class="h-full rounded-full transition-all duration-500"
+                                            :class="getCurrentAchievement(child.total_points_earned)
+                                                ? STAGE_COLORS[getCurrentAchievement(child.total_points_earned).color].badge
+                                                : 'bg-gray-400'"
+                                            :style="{ width: getProgressPercent(child.total_points_earned) + '%' }"
+                                        />
+                                    </div>
+                                    <p v-if="getNextAchievement(child.total_points_earned)" class="mt-0.5 text-xs text-gray-400">
+                                        Faltan {{ getPointsToNext(child.total_points_earned) }} pts para Nivel {{ getNextAchievement(child.total_points_earned).level }}
+                                    </p>
+                                    <p v-else class="mt-0.5 text-xs font-medium text-red-500">¡Nivel máximo! 🏆</p>
+                                </div>
                             </div>
-                            <p
-                                class="text-2xl font-bold leading-tight"
-                                :class="child.points >= 0 ? 'text-indigo-600' : 'text-red-600'"
-                            >
-                                {{ child.points }} pts
-                            </p>
-                            <!-- Pts ganados | Logro actual — en la misma línea -->
-                            <p class="text-xs">
-                                <span class="text-gray-400">{{ child.total_points_earned ?? 0 }} puntos totales ganados</span>
-                                <template v-if="getCurrentAchievement(child.total_points_earned)">
-                                    <span class="mx-1 text-gray-300">|</span>
-                                    <span
-                                        class="font-semibold"
-                                        :class="STAGE_COLORS[getCurrentAchievement(child.total_points_earned).color].text"
-                                    >🏆 {{ getDisplayName(getCurrentAchievement(child.total_points_earned)) }}</span>
-                                </template>
-                                <template v-else>
-                                    <span class="mx-1 text-gray-300">|</span>
-                                    <span class="text-gray-400">Sin logro aún</span>
-                                </template>
-                            </p>
-                            <!-- Barra de progreso hacia el próximo logro -->
-                            <div class="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-gray-200">
-                                <div
-                                    class="h-full rounded-full transition-all duration-500"
-                                    :class="getCurrentAchievement(child.total_points_earned)
-                                        ? STAGE_COLORS[getCurrentAchievement(child.total_points_earned).color].badge
-                                        : 'bg-gray-400'"
-                                    :style="{ width: getProgressPercent(child.total_points_earned) + '%' }"
-                                />
-                            </div>
-                            <p v-if="getNextAchievement(child.total_points_earned)" class="mt-0.5 text-xs text-gray-400">
-                                Faltan {{ getPointsToNext(child.total_points_earned) }} pts para Nivel {{ getNextAchievement(child.total_points_earned).level }}
-                            </p>
-                            <p v-else class="mt-0.5 text-xs font-medium text-red-500">¡Nivel máximo! 🏆</p>
-                        </div>
+                        </Transition>
                     </div>
                 </div>
 
@@ -554,3 +649,23 @@ function shareApp() {
         </Modal>
     </AuthenticatedLayout>
 </template>
+
+<style scoped>
+/* Cara oculta sale girada hacia la derecha */
+.flip-leave-active {
+    transition: transform 0.22s ease-in, opacity 0.22s ease-in;
+}
+.flip-leave-to {
+    transform: rotateY(90deg);
+    opacity: 0;
+}
+
+/* Cara revelada entra desde la izquierda */
+.flip-enter-active {
+    transition: transform 0.22s ease-out, opacity 0.22s ease-out;
+}
+.flip-enter-from {
+    transform: rotateY(-90deg);
+    opacity: 0;
+}
+</style>

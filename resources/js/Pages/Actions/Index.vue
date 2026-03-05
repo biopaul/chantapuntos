@@ -6,8 +6,8 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import Modal from '@/Components/Modal.vue';
 import Skeleton from '@/Components/Skeleton.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
-import { onMounted, ref } from 'vue';
+import { Head, Link, usePage, useForm } from '@inertiajs/vue3';
+import { computed, onMounted, ref } from 'vue';
 
 const props = defineProps({
     actions: { type: Array, required: true },
@@ -70,8 +70,26 @@ function submitEdit() {
     });
 }
 
+const currentUserId = computed(() => usePage().props.auth?.user?.id ?? null);
+
 function isCustom(action) {
     return action.user_id != null;
+}
+
+function isMine(action) {
+    return action.user_id === currentUserId.value;
+}
+
+function actionBadgeLabel(action) {
+    if (!isCustom(action)) return 'Sistema';
+    if (isMine(action)) return 'Personal';
+    return 'Compartida';
+}
+
+function actionBadgeClass(action) {
+    if (!isCustom(action)) return 'bg-blue-100 text-blue-800';
+    if (isMine(action)) return 'bg-orange-100 text-orange-800';
+    return 'bg-purple-100 text-purple-800';
 }
 </script>
 
@@ -125,9 +143,9 @@ function isCustom(action) {
                                             <span class="break-words">{{ action.name }}</span>
                                             <span
                                                 class="shrink-0 rounded px-1.5 py-0.5 text-xs font-medium"
-                                                :class="isCustom(action) ? 'bg-orange-100 text-orange-800' : 'bg-blue-100 text-blue-800'"
+                                                :class="actionBadgeClass(action)"
                                             >
-                                                {{ isCustom(action) ? 'Personal' : 'Sistema' }}
+                                                {{ actionBadgeLabel(action) }}
                                             </span>
                                         </div>
                                     </td>
@@ -147,31 +165,32 @@ function isCustom(action) {
                                     </td>
                                     <td class="whitespace-nowrap px-2 py-2 text-right">
                                         <div class="inline-flex items-center gap-1">
-                                            <button
-                                                type="button"
-                                                class="rounded p-1 text-indigo-600 transition hover:bg-indigo-50 hover:text-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                                title="Editar"
-                                                aria-label="Editar"
-                                                @click="openEdit(action)"
-                                            >
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                                                </svg>
-                                            </button>
-                                            <Link
-                                                v-if="isCustom(action)"
-                                                :href="route('actions.destroy', action)"
-                                                method="delete"
-                                                as="button"
-                                                class="rounded p-1 text-red-600 transition hover:bg-red-50 hover:text-red-800 focus:outline-none focus:ring-2 focus:ring-red-500"
-                                                title="Eliminar"
-                                                aria-label="Eliminar"
-                                                preserve-scroll
-                                            >
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                </svg>
-                                            </Link>
+                                            <template v-if="isMine(action)">
+                                                <button
+                                                    type="button"
+                                                    class="rounded p-1 text-indigo-600 transition hover:bg-indigo-50 hover:text-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                                    title="Editar"
+                                                    aria-label="Editar"
+                                                    @click="openEdit(action)"
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                                    </svg>
+                                                </button>
+                                                <Link
+                                                    :href="route('actions.destroy', action)"
+                                                    method="delete"
+                                                    as="button"
+                                                    class="rounded p-1 text-red-600 transition hover:bg-red-50 hover:text-red-800 focus:outline-none focus:ring-2 focus:ring-red-500"
+                                                    title="Eliminar"
+                                                    aria-label="Eliminar"
+                                                    preserve-scroll
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                    </svg>
+                                                </Link>
+                                            </template>
                                         </div>
                                     </td>
                                 </tr>

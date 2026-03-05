@@ -6,6 +6,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class User extends Authenticatable
 {
@@ -65,5 +67,27 @@ class User extends Authenticatable
     public function actions(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Action::class);
+    }
+
+    /**
+     * IDs de los co-padres: usuarios que comparten al menos un hijo con este usuario.
+     */
+    public function coParentIds(): Collection
+    {
+        $accessibleChildIds = Child::accessibleBy($this)->pluck('id');
+
+        // Propietarios originales de hijos a los que tengo acceso compartido
+        $ownerIds = Child::accessibleBy($this)
+            ->where('user_id', '!=', $this->id)
+            ->whereNotNull('user_id')
+            ->pluck('user_id');
+
+        // Usuarios con acceso compartido a mis hijos
+        $sharedUserIds = DB::table('child_user')
+            ->whereIn('child_id', $accessibleChildIds)
+            ->where('user_id', '!=', $this->id)
+            ->pluck('user_id');
+
+        return $ownerIds->merge($sharedUserIds)->unique()->values();
     }
 }
