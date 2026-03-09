@@ -21,7 +21,7 @@ class PointTransactionController extends Controller
             'action_id' => ['required', 'exists:actions,id'],
         ]);
 
-        $child = Child::where('id', $validated['child_id'])->where('user_id', $request->user()->id)->firstOrFail();
+        $child = Child::accessibleBy($request->user())->where('id', $validated['child_id'])->firstOrFail();
         $coParentIds = $request->user()->coParentIds();
         $action = Action::where('id', $validated['action_id'])
             ->where(function ($q) use ($request, $coParentIds) {
